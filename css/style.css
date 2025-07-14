@@ -1,0 +1,654 @@
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;500;700&display=swap');
+
+/* [DIUBAH] Palet Warna dari Biru ke Pink */
+:root {
+    --p3-pink: #ff69b4; /* Warna pink utama (Hot Pink) */
+    --p3-dark-pink: #5d0f42; /* Warna dasar gelap dengan nuansa pink/ungu */
+    --p3-light-pink: #ffc0cb; /* Warna pink muda */
+    --p3-white: #f0f8ff;
+    --font-primary: 'Teko', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-primary);
+    overflow: hidden;
+    /* [DIUBAH] Latar belakang gradien dengan nuansa pink */
+    background: radial-gradient(ellipse at bottom, var(--p3-dark-pink) 0%, #000000 100%);
+}
+
+/* --- Styling untuk Animasi Kelopak Bunga --- */
+#petal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* [DIUBAH] Menggunakan gambar petal.png */
+.petal {
+    position: absolute;
+    top: -10%;
+    width: 25px; /* Sesuaikan ukuran jika perlu */
+    height: 25px; /* Sesuaikan ukuran jika perlu */
+    background-image: url('img/petal.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.8;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(0) rotateZ(0deg) rotateY(0deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(110vh) rotateZ(720deg) rotateY(360deg); /* Ditambah rotasi Y untuk efek 3D */
+        opacity: 0;
+    }
+}
+
+
+/* --- Styling Entrance Baru dengan Pintu --- */
+.door-entrance-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 100;
+    cursor: pointer;
+    background-color: transparent; /* Dibuat transparan agar background body terlihat */
+}
+
+.door {
+    position: absolute;
+    top: 0;
+    width: 50.5%; /* Sedikit tumpang tindih untuk menutupi celah */
+    height: 100%;
+    background-color: var(--p3-dark-pink);
+    border: 2px solid var(--p3-pink);
+    box-shadow: inset 0 0 50px rgba(0, 156, 255, 0.2);
+    transition: transform 1.2s cubic-bezier(0.86, 0, 0.07, 1);
+}
+
+.left-door {
+    left: 0;
+}
+
+.right-door {
+    right: 0;
+}
+
+.door-entrance-container.opened .left-door {
+    transform: translateX(-100%);
+}
+
+.door-entrance-container.opened .right-door {
+    transform: translateX(100%);
+}
+
+.door-entrance-container.opened .door-message {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.door-entrance-container.hidden {
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s 1s; /* Hilang setelah pintu terbuka */
+}
+
+.door-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: var(--p3-white);
+    transition: opacity 1s;
+    width: 90%;
+}
+
+.door-message h1 {
+    font-size: 4rem;
+    margin: 0;
+    text-shadow: 0 0 10px var(--p3-pink);
+}
+
+.door-message p {
+    font-size: 1.5rem;
+    color: var(--p3-light-blue);
+    letter-spacing: 2px;
+    border: 1px solid var(--p3-light-blue);
+    padding: 0.5rem 1rem;
+    margin-top: 1rem;
+    display: inline-block;
+    animation: pulse-message 2s infinite;
+}
+
+@keyframes pulse-message {
+    0% {
+        box-shadow: 0 0 5px var(--p3-light-blue);
+    }
+    50% {
+        box-shadow: 0 0 20px var(--p3-pink);
+    }
+    100% {
+        box-shadow: 0 0 5px var(--p3-light-blue);
+    }
+}
+
+
+/* --- Kontainer Utama & Latar Belakang --- */
+.main-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: transparent; /* Dibuat transparan agar background body terlihat */
+    color: var(--p3-white);
+    opacity: 0;
+    transition: opacity 0.5s;
+     /* [BARU] Menambahkan perspektif untuk efek 3D */
+    perspective: 1000px;
+}
+
+.main-container.visible {
+    opacity: 1;
+}
+
+.background-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/subtle-waves.png');
+    opacity: 0.1;
+    animation: wave-animation 20s linear infinite;
+    z-index: -1;
+}
+
+@keyframes wave-animation {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 256px 0;
+    }
+}
+
+.vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.8);
+    z-index: -1;
+}
+
+/* --- Visual Karakter --- */
+/* .character-visual {
+    position: absolute;
+    right: 5%;
+    bottom: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    opacity: 0;
+    animation: fadeInCharacter 1s forwards;
+    animation-delay: 0.5s;
+    z-index: 5;
+} */
+
+/* .character-visual img {
+    max-width: 100%;
+    max-height: 95%;
+    filter: drop-shadow(0 0 15px var(--p3-pink));
+} */
+
+/* --- [BARU] Styling untuk Kubus 3D --- */
+.cube-container {
+    position: absolute;
+    top: 50%;
+    left: 55%; /* Sedikit ke kanan agar tidak tertutup menu */
+    width: 300px;
+    height: 300px;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: fadeInCube 2s forwards 1s; /* Muncul setelah menu */
+}
+
+@keyframes fadeInCube {
+    to { opacity: 1; }
+}
+
+.cube {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: spin 25s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: rotateY(0deg) rotateX(0deg); }
+    to { transform: rotateY(360deg) rotateX(360deg); }
+}
+
+.face {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border: 2px solid var(--p3-pink);
+    box-shadow: 0 0 20px var(--p3-pink);
+    opacity: 0.7;
+}
+
+.face video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Memastikan video memenuhi sisi kubus */
+}
+
+/* Posisi setiap sisi kubus */
+.front  { transform: rotateY(  0deg) translateZ(150px); }
+.back   { transform: rotateY(180deg) translateZ(150px); }
+.right  { transform: rotateY( 90deg) translateZ(150px); }
+.left   { transform: rotateY(-90deg) translateZ(150px); }
+.top    { transform: rotateX( 90deg) translateZ(150px); }
+.bottom { transform: rotateX(-90deg) translateZ(150px); }
+
+
+@keyframes fadeInCharacter {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+/* --- Styling untuk Kontainer Navigasi --- */
+.nav-container {
+    width: 45%;
+    padding: 2rem 4rem;
+    z-index: 10;
+    opacity: 0;
+    animation: slideIn 1s forwards;
+    animation-delay: 0.8s;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.menu-header {
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border-bottom: 2px solid var(--p3-pink);
+    padding-bottom: 1rem;
+}
+
+.menu-header span {
+    margin-right: 1.5rem;
+}
+
+.menu-header #event-year {
+    color: var(--p3-light-blue);
+}
+
+.nav-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    padding: 0.5rem 1.5rem;
+    margin: 0.5rem 0;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    opacity: 0.6;
+}
+
+.menu-item[data-link] {
+    cursor: pointer;
+}
+
+.menu-item .item-name {
+    font-size: 3.5rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    display: block;
+}
+
+.menu-item .item-desc {
+    font-size: 1.2rem;
+    font-family: Arial, sans-serif;
+    color: var(--p3-light-blue);
+    display: none;
+}
+
+.menu-item.active {
+    opacity: 1;
+    transform: translateX(20px);
+}
+
+.menu-item.active .item-desc {
+    display: block;
+}
+
+.menu-item.active::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-left: 20px solid var(--p3-pink);
+}
+
+/* --- Styling untuk Kontainer Misi --- */
+.mission-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 3rem 5rem;
+    box-sizing: border-box;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease-in;
+}
+
+.back-button {
+    position: absolute;
+    top: 3rem;
+    left: 5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--p3-light-blue);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.back-button:hover {
+    color: var(--p3-pink);
+}
+
+.mission-title {
+    font-size: 3.5rem;
+    text-align: center;
+    color: var(--p3-white);
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--p3-pink);
+    padding-bottom: 1rem;
+}
+
+.missions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.mission-card {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    background-color: rgba(0, 156, 255, 0.05);
+    border-left: 5px solid var(--p3-pink);
+    padding: 1rem 1.5rem;
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+@keyframes slideFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.main-container.viewing-missions .mission-card {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.main-container.viewing-missions .mission-card:nth-child(1) {
+    transition-delay: 0.3s;
+}
+
+.main-container.viewing-missions .mission-card:nth-child(2) {
+    animation: slideFromRight 0.6s forwards;
+    animation-delay: 0.5s;
+}
+
+.main-container.viewing-missions .mission-card:nth-child(3) {
+    transition-delay: 0.7s;
+}
+
+
+.mission-image {
+    flex-shrink: 0;
+}
+
+.mission-image img {
+    width: 80px;
+    height: 80px;
+    filter: invert(85%) sepia(88%) saturate(2331%) hue-rotate(179deg) brightness(106%) contrast(106%);
+}
+
+.mission-text h3 {
+    font-size: 2rem;
+    color: var(--p3-light-blue);
+    margin: 0 0 0.5rem 0;
+}
+
+.mission-text p {
+    font-family: Arial, sans-serif;
+    font-size: 1.1rem;
+    color: var(--p3-white);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* --- Logika Visibilitas --- */
+.main-container.viewing-missions .nav-container {
+    opacity: 0;
+    transform: translateX(-50px);
+    pointer-events: none;
+    animation: none;
+}
+
+.main-container.viewing-missions .mission-container {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* --- Media Queries (Responsif) --- */
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto;
+    }
+
+    .door-message h1 {
+        font-size: 2.5rem;
+    }
+
+    .door-message p {
+        font-size: 1.2rem;
+    }
+
+    .character-visual {
+        width: 100%;
+        right: 0;
+        opacity: 0;
+        animation: fadeInCharacterMobile 2s forwards;
+        animation-delay: 1.5s;
+    }
+
+    .character-visual img {
+        max-height: 70%;
+        opacity: 0.15;
+        filter: drop-shadow(0 0 10px var(--p3-pink)) blur(2px);
+    }
+
+    @keyframes fadeInCharacterMobile {
+        to {
+            opacity: 1;
+        }
+    }
+
+    .nav-container {
+        width: 100%;
+        padding: 1.5rem;
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .menu-header {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        text-align: center;
+        border: none;
+    }
+
+    .menu-header span {
+        display: block;
+        margin: 0.2rem 0;
+    }
+
+    .menu-item {
+        padding: 0.2rem 0;
+        text-align: center;
+    }
+
+    .menu-item .item-name {
+        font-size: 2.8rem;
+    }
+
+    .menu-item .item-desc {
+        font-size: 1rem;
+    }
+
+    .menu-item.active {
+        transform: translateX(0);
+    }
+
+    .menu-item.active::before {
+        display: none;
+    }
+
+    .mission-container {
+        padding: 4rem 1.5rem 1.5rem 1.5rem;
+        justify-content: flex-start;
+        overflow-y: auto;
+    }
+
+    .back-button {
+        top: 1.5rem;
+        left: 1.5rem;
+    }
+
+    .mission-title {
+        font-size: 2.5rem;
+    }
+
+    .mission-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+        border-left: none;
+        border-top: 3px solid var(--p3-pink);
+        transform: translateY(20px);
+    }
+
+    .main-container.viewing-missions .mission-card {
+        transform: translateY(0);
+        animation: none;
+    }
+
+    .main-container.viewing-missions .mission-card:nth-child(2),
+    .main-container.viewing-missions .mission-card:nth-child(3) {
+        animation: none;
+    }
+
+    .mission-image img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .mission-text h3 {
+        font-size: 1.5rem;
+    }
+
+    .mission-text p {
+        font-size: 0.9rem;
+    }
+/* [BARU] Penyesuaian untuk kubus di mobile */
+    .cube-container {
+        /* Perkecil dan posisikan ulang kubus */
+        width: 150px;
+        height: 150px;
+        left: 50%;
+        top: 25%;
+    }
+    .cube {
+        animation-duration: 20s; /* Putar sedikit lebih cepat */
+    }
+    .face {
+        width: 150px;
+        height: 150px;
+    }
+    .front  { transform: rotateY(  0deg) translateZ(75px); }
+    .back   { transform: rotateY(180deg) translateZ(75px); }
+    .right  { transform: rotateY( 90deg) translateZ(75px); }
+    .left   { transform: rotateY(-90deg) translateZ(75px); }
+    .top    { transform: rotateX( 90deg) translateZ(75px); }
+    .bottom { transform: rotateX(-90deg) translateZ(75px); }
+    
+    /* Posisikan ulang menu agar tidak tertimpa kubus */
+    .nav-container {
+        justify-content: center;
+        align-items: flex-end;
+        padding-bottom: 2rem;
+        height: 50%;
+        top: 50%;
+        position: absolute;
+    }
+}
