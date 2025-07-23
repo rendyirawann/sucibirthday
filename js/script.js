@@ -1,44 +1,179 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- [BARU] Logika untuk Membuat Animasi Kelopak Bunga ---
+    // --- Logika Animasi Kelopak Bunga ---
     const petalContainer = document.getElementById('petal-container');
-    const numberOfPetals = 20; // Jumlah kelopak bunga yang diinginkan
-
+    const numberOfPetals = 20;
     for (let i = 0; i < numberOfPetals; i++) {
         const petal = document.createElement('div');
         petal.classList.add('petal');
-        
-        // Atur properti acak untuk setiap kelopak bunga
         petal.style.left = `${Math.random() * 100}vw`;
-        petal.style.animationDuration = `${Math.random() * 5 + 5}s`; // Durasi antara 5-10 detik
+        petal.style.animationDuration = `${Math.random() * 5 + 5}s`;
         petal.style.animationDelay = `${Math.random() * 5}s`;
-        petal.style.transform = `scale(${Math.random() * 0.5 + 0.5})`; // Ukuran acak
-        petal.style.filter = `blur(${Math.random() * 1}px)`; // Sedikit blur acak
-
+        petal.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
+        petal.style.filter = `blur(${Math.random() * 1}px)`;
         petalContainer.appendChild(petal);
     }
 
-
-    // --- Logika untuk Pintu Masuk ---
+    // --- Logika Pintu Masuk ---
     const doorEntrance = document.getElementById('door-entrance');
     const mainContainer = document.querySelector('.main-container');
     const backgroundMusic = document.getElementById('background-music');
 
     doorEntrance.addEventListener('click', () => {
-        backgroundMusic.play();
+        // backgroundMusic.play().catch(e => console.log("Autoplay was prevented."));
         doorEntrance.classList.add('opened');
         mainContainer.classList.add('visible');
         doorEntrance.classList.add('hidden');
         initializeMainMenu();
-    }, { once: true }); // [BARU] { once: true } agar pintu hanya bisa diklik sekali
+        initializeGridGallery(); // [DIUBAH] Panggil fungsi galeri grid yang baru
+    }, { once: true });
+    
+    // --- [PERUBAHAN UTAMA] Logika untuk Galeri Foto Grid ---
+    function initializeGridGallery() {
+        const galleryContainer = document.querySelector('.gallery-container');
+        // [DIUBAH] Ganti angka total gambar menjadi 100
+        const totalImages = 100;
+
+        for (let i = 1; i <= totalImages; i++) {
+            const img = document.createElement('img');
+            img.src = `img/gallery/${i}.jpg`;
+            img.classList.add('gallery-item');
+            galleryContainer.appendChild(img);
+        }
+
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        galleryItems.forEach((item, index) => {
+            // [DIUBAH] Perkecil jeda agar 100 gambar muncul lebih cepat
+            setTimeout(() => {
+                item.classList.add('show');
+            }, index * 1000); 
+        });
+    }
 
 
-    // --- Logika Menu Utama (tidak berubah) ---
+    // --- Logika Menu Utama ---
     function initializeMainMenu() {
+        // [DIUBAH] Variabel musik dipindahkan ke sini agar bisa diakses
+        const music = document.getElementById('background-music');
+        
+        const cubeContainer = document.querySelector('.cube-container');
+        const mediaPlayer = document.querySelector('.media-player-container');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const songTitleEl = document.getElementById('song-title');
+        const songArtistEl = document.getElementById('song-artist');
+        const playlistContainer = document.querySelector('.playlist');
         const navContainer = document.querySelector('.nav-container');
         const missionContainer = document.querySelector('.mission-container');
         const backButton = document.querySelector('.back-button');
         const menuItems = document.querySelectorAll('.menu-item');
         let activeIndex = 0;
+        
+       // [BARU] Daftar Lagu Anda
+        const playlist = [
+            { title: 'Everything You Are', artist: 'Hindia', src: 'audio/hindia.mp3' },
+            { title: 'Kita Usahakan Rumah Itu', artist: 'Sal Priadi', src: 'audio/kitausahakanrumahitu.mp3' },
+            { title: 'Last Night on Earth', artist: 'Green Day', src: 'audio/lastnight.mp3' },
+            { title: 'Nobody Else', artist: 'LANY', src: 'audio/nobodyelse.mp3' },
+            { title: 'Nothing', artist: 'Bruno Major', src: 'audio/nothing.mp3' },
+            { title: 'Anything 4 U', artist: 'LANY', src: 'audio/anything4u.mp3' },
+            { title: 'No', artist: 'LANY', src: 'audio/no.mp3' },
+            { title: 'Happiness', artist: 'Rex Orange County', src: 'audio/happiness.mp3' },
+            { title: 'Bercinta Lewat Kata', artist: 'Donne Maula', src: 'audio/bercintalewatkata.mp3' },
+            { title: 'Cahaya', artist: 'TULUS', src: 'audio/cahaya.mp3' },
+            { title: 'Blessed', artist: 'Daniel Cesar', src: 'audio/blessed.mp3' },
+            // Tambahkan lagu lain di sini
+        ];
+        let currentTrackIndex = 8;
+
+        // [BARU] Logika untuk SHUFFLE lagu pertama
+        // currentTrackIndex = Math.floor(Math.random() * playlist.length);
+        
+        // [BARU] Fungsi untuk memuat lagu
+        function loadTrack(index) {
+            const track = playlist[index];
+            songTitleEl.textContent = track.title;
+            songArtistEl.textContent = track.artist;
+            music.src = track.src;
+            
+            // Update kelas 'active' di playlist
+            document.querySelectorAll('.playlist-item').forEach((item, itemIndex) => {
+                if (itemIndex === index) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // [BARU] Fungsi untuk memutar lagu berikutnya
+        function playNextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack(currentTrackIndex);
+            music.play();
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        }
+
+        // [BARU] Fungsi untuk memutar lagu sebelumnya
+        function playPrevTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrackIndex);
+            music.play();
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        }
+
+        // [BARU] Isi container playlist dengan lagu dari array
+        playlist.forEach((track, index) => {
+            const item = document.createElement('div');
+            item.classList.add('playlist-item');
+            item.innerHTML = `<div class="title">${track.title}</div><div class="artist">${track.artist}</div>`;
+            item.addEventListener('click', () => {
+                currentTrackIndex = index;
+                loadTrack(currentTrackIndex);
+                music.play();
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            });
+            playlistContainer.appendChild(item);
+        });
+
+        // Event listener untuk kubus (tidak berubah)
+        cubeContainer.addEventListener('click', () => {
+            mediaPlayer.classList.toggle('show');
+            cubeContainer.classList.toggle('player-active');
+            navContainer.classList.toggle('player-active');
+        });
+
+        // Event listener untuk Play/Pause (diperbarui)
+        playPauseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (music.paused) {
+                music.play();
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                music.pause();
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        });
+
+        // Event listener baru untuk tombol Next dan Prev
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playNextTrack();
+        });
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playPrevTrack();
+        });
+
+        // Event listener saat lagu selesai, putar lagu berikutnya
+        music.addEventListener('ended', playNextTrack);
+        // Muat lagu pertama (yang sudah di-shuffle)
+        loadTrack(currentTrackIndex);
+
+        // [BARU] Putar lagu secara otomatis setelah dimuat
+        music.play();
+        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+
 
         function setActiveItem(index) {
             menuItems.forEach(item => item.classList.remove('active'));

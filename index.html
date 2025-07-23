@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>You're Invited! - A Special Birthday Mission</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +13,7 @@
 <body>
     <div id="petal-container"></div>
     
-    <audio id="background-music" src="audio/hindia.mp3" loop></audio>
+<audio id="background-music" src="audio/hindia.mp3"></audio>
 
     <div class="door-entrance-container" id="door-entrance">
         <div class="door left-door"></div>
@@ -27,27 +28,35 @@
         <div class="background-overlay"></div>
         <div class="vignette"></div>
 
+        <div class="gallery-container">
+
+        </div>
+
         <div class="cube-container">
             <div class="cube">
-                <div class="face front">
-                    <video src="video/1.mp4" autoplay loop muted playsinline></video>
+                <div class="face front"><video src="video/1.mp4" autoplay loop muted playsinline></video></div>
+                <div class="face back"><video src="video/2.mp4" autoplay loop muted playsinline></video></div>
+                <div class="face right"><video src="video/3.mp4" autoplay loop muted playsinline></video></div>
+                <div class="face left"><video src="video/4.mp4" autoplay loop muted playsinline></video></div>
+                <div class="face top"><video src="video/5.mp4" autoplay loop muted playsinline></video></div>
+                <div class="face bottom"><video src="video/6.mp4" autoplay loop muted playsinline></video></div>
+            </div>
+        </div>
+        
+      <div class="media-player-container">
+            <div class="current-track">
+                <div class="song-info">
+                    <span id="song-title" class="song-title">Everything You Are</span>
+                    <span id="song-artist" class="song-artist">Hindia</span>
                 </div>
-                <div class="face back">
-                    <video src="video/2.mp4" autoplay loop muted playsinline></video>
-                </div>
-                <div class="face right">
-                    <video src="video/3.mp4" autoplay loop muted playsinline></video>
-                </div>
-                <div class="face left">
-                    <video src="video/7.mp4" autoplay loop muted playsinline></video>
-                </div>
-                <div class="face top">
-                    <video src="video/5.mp4" autoplay loop muted playsinline></video>
-                </div>
-                <div class="face bottom">
-                    <video src="video/6.mp4" autoplay loop muted playsinline></video>
+                <div class="controls">
+                    <button id="prev-btn" class="control-btn"><i class="fas fa-backward-step"></i></button>
+                    <button id="play-pause-btn" class="control-btn"><i class="fas fa-play"></i></button>
+                    <button id="next-btn" class="control-btn"><i class="fas fa-forward-step"></i></button>
                 </div>
             </div>
+            <div class="playlist">
+                </div>
         </div>
 
         <div class="nav-container">
@@ -65,18 +74,18 @@
                     <span class="item-name">DATE & TIME</span>
                     <span class="item-desc">Sunday, 27 July 2025 // 00:00 AM Onwards</span>
                 </li>
-                <li class="menu-item" data-item="venue" data-link="https://www.google.com/maps/place/Contoh+Kafe">
+                <!-- <li class="menu-item" data-item="venue" data-link="https://www.google.com/maps/place/Contoh+Kafe">
                     <span class="item-name">VENUE</span>
                     <span class="item-desc">#</span>
-                </li>
+                </li> -->
                 <li class="menu-item" data-item="dresscode">
                     <span class="item-name">DRESS CODE</span>
                     <span class="item-desc">Stylish Blue or Smart Casual</span>
                 </li>
-                <li class="menu-item" data-item="rsvp" data-link="https://wa.me/6281234567890?text=Hi!%20Saya%20akan%20datang%20ke%20acara%20ulang%20tahunmu.">
+                <!-- <li class="menu-item" data-item="rsvp" data-link="https://wa.me/6281234567890?text=Hi!%20Saya%20akan%20datang%20ke%20acara%20ulang%20tahunmu.">
                     <span class="item-name">RSVP</span>
                     <span class="item-desc">Confirm your attendance before July 27.</span>
-                </li>
+                </li> -->
             </ul>
         </div>
 
@@ -85,23 +94,37 @@
             <h2 class="mission-title">MISSION BRIEFING</h2>
             <div class="missions-list">
                 <div class="mission-card">
-                    <div class="mission-image"><img src="https://i.ibb.co/68v4wMm/mission-icon-1.png" alt="Mission Icon 1"></div>
+                    <div class="mission-image"><img src="img/mission_1a.png" alt="Mission Icon 1"></div>
                     <div class="mission-text">
                         <h3>Mission 01: Arrive On Time</h3>
                         <p>Your presence is crucial. The party starts at 07:00 PM sharp. Don't be late for the celebration!</p>
                     </div>
                 </div>
                 <div class="mission-card">
-                    <div class="mission-image"><img src="https://i.ibb.co/c1kZJhy/mission-icon-2.png" alt="Mission Icon 2"></div>
+                    <div class="mission-image"><img src="img/mission_2.png" alt="Mission Icon 2"></div>
                     <div class="mission-text">
                         <h3>Mission 02: Enjoy The Feast</h3>
                         <p>Delicious food and drinks have been prepared. Your objective is to enjoy them to the fullest.</p>
                     </div>
                 </div>
                 <div class="mission-card">
-                    <div class="mission-image"><img src="https://i.ibb.co/3W9Bqg6/mission-icon-3.png" alt="Mission Icon 3"></div>
+                    <div class="mission-image"><img src="img/mission_2.png" alt="Mission Icon 3"></div>
                     <div class="mission-text">
-                        <h3>Mission 03: Create Memories</h3>
+                        <h3>Mission 03: Enjoy The Feast</h3>
+                        <p>Delicious food and drinks have been prepared. Your objective is to enjoy them to the fullest.</p>
+                    </div>
+                </div>
+                <div class="mission-card">
+                    <div class="mission-image"><img src="img/mission_3a.png" alt="Mission Icon 4"></div>
+                    <div class="mission-text">
+                        <h3>Mission 04: Create Memories</h3>
+                        <p>Engage in conversation, laugh, and take photos. Let's make this a day to remember forever.</p>
+                    </div>
+                </div>
+                <div class="mission-card">
+                    <div class="mission-image"><img src="img/mission_3a.png" alt="Mission Icon 5"></div>
+                    <div class="mission-text">
+                        <h3>Mission 05: Create Memories</h3>
                         <p>Engage in conversation, laugh, and take photos. Let's make this a day to remember forever.</p>
                     </div>
                 </div>

@@ -1,3 +1,4 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;500;700&display=swap');
 
 /* [DIUBAH] Palet Warna dari Biru ke Pink */
@@ -9,9 +10,14 @@
     --font-primary: 'Teko', sans-serif;
 }
 
-body {
+/* [PERBAIKAN UTAMA] Pastikan HTML dan Body memenuhi layar */
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
+}
+
+body {
     font-family: var(--font-primary);
     overflow: hidden;
     /* [DIUBAH] Latar belakang gradien dengan nuansa pink */
@@ -35,7 +41,7 @@ body {
     top: -10%;
     width: 25px; /* Sesuaikan ukuran jika perlu */
     height: 25px; /* Sesuaikan ukuran jika perlu */
-    background-image: url('img/petal.png');
+    background-image: url('../img/petal.png');
     background-size: contain;
     background-repeat: no-repeat;
     opacity: 0.8;
@@ -147,23 +153,13 @@ body {
 
 /* --- Kontainer Utama & Latar Belakang --- */
 .main-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    background: transparent; /* Dibuat transparan agar background body terlihat */
-    color: var(--p3-white);
-    opacity: 0;
-    transition: opacity 0.5s;
-     /* [BARU] Menambahkan perspektif untuk efek 3D */
+    position: relative; width: 100vw; height: 100vh;
+    display: flex; justify-content: flex-start; align-items: center;
+    background: transparent; color: var(--p3-white);
+    opacity: 0; transition: opacity 0.5s;
     perspective: 1000px;
 }
-
-.main-container.visible {
-    opacity: 1;
-}
+.main-container.visible { opacity: 1; }
 
 .background-overlay {
     position: absolute;
@@ -195,6 +191,48 @@ body {
     box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.8);
     z-index: -1;
 }
+/* --- [PERUBAHAN UTAMA] Styling untuk Galeri Foto Grid --- */
+.gallery-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45vw; /* Lebar bisa disesuaikan */
+    height: 70vh; /* Tinggi bisa disesuaikan */
+    border: 2px solid var(--p3-pink);
+    box-shadow: 0 0 30px var(--p3-pink);
+    border-radius: 10px;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    display: grid;
+    /* [DIUBAH] Grid diubah menjadi 10x10 untuk 100 gambar */
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    gap: 4px; /* Jarak antar gambar diperkecil */
+    padding: 4px;
+}
+
+.main-container.visible .gallery-container {
+    opacity: 0.3;
+}
+
+.gallery-item {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ini sudah benar, memastikan gambar mengisi sel tanpa distorsi */
+    overflow: hidden;  /* [PENTING] Tambahkan baris ini */
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.gallery-item.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+
 
 /* --- Visual Karakter --- */
 /* .character-visual {
@@ -218,16 +256,14 @@ body {
     filter: drop-shadow(0 0 15px var(--p3-pink));
 } */
 
-/* --- [BARU] Styling untuk Kubus 3D --- */
 .cube-container {
-    position: absolute;
-    top: 50%;
-    left: 55%; /* Sedikit ke kanan agar tidak tertutup menu */
-    width: 300px;
-    height: 300px;
+    position: absolute; top: 50%;
+    left: 48%; width: 300px; height: 300px;
     transform: translate(-50%, -50%);
-    opacity: 0;
-    animation: fadeInCube 2s forwards 1s; /* Muncul setelah menu */
+    opacity: 0; animation: fadeInCube 2s forwards 1s;
+    cursor: pointer;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out; /* Tambah transisi */
+    z-index: 6; /* Pastikan kubus di atas galeri */
 }
 
 @keyframes fadeInCube {
@@ -235,12 +271,12 @@ body {
 }
 
 .cube {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
+    width: 100%; height: 100%;
+    position: relative; transform-style: preserve-3d;
     animation: spin 25s infinite linear;
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
+.cube-container.player-active .cube { transform: rotateY(-30deg) rotateX(10deg) scale(0.9); }
 
 @keyframes spin {
     from { transform: rotateY(0deg) rotateX(0deg); }
@@ -278,6 +314,69 @@ body {
     }
 }
 
+/* --- Styling untuk Media Player (DIROMBAK) --- */
+.media-player-container {
+    position: absolute; top: 50%; left: 65%;
+    transform: translate(-50%, -50%); z-index: 15;
+    background-color: rgba(0, 0, 0, 0.85);
+    border: 2px solid var(--p3-pink); border-radius: 10px;
+    /* [DIUBAH] Dibuat flex-direction column */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+    opacity: 0; transform: translate(50px, -50%);
+    pointer-events: none;
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    width: 350px; /* Lebar diperbesar untuk playlist */
+}
+.media-player-container.show { opacity: 1; transform: translate(-50%, -50%); pointer-events: auto; }
+
+.current-track {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    gap: 1.5rem;
+}
+
+.song-info { display: flex; flex-direction: column; text-align: left; }
+.song-title { font-size: 0.8rem; font-weight: 700; color: var(--p3-white); }
+.song-artist { font-size: 1.1rem; color: var(--p3-light-pink); }
+.controls { display: flex; gap: 0.5rem; }
+.control-btn {
+    background-color: transparent; border: 2px solid var(--p3-light-pink);
+    color: var(--p3-light-pink); width: 45px; height: 45px;
+    border-radius: 50%; font-size: 1rem; cursor: pointer;
+    display: flex; justify-content: center; align-items: center;
+    transition: all 0.2s ease;
+}
+.control-btn:hover { background-color: var(--p3-pink); border-color: var(--p3-pink); color: var(--p3-white); }
+
+/* [BARU] Styling untuk Playlist */
+.playlist {
+    border-top: 1px solid var(--p3-pink);
+    max-height: 160px; /* Batasi tinggi agar bisa di-scroll */
+    overflow-y: auto;
+}
+
+.playlist-item {
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid rgba(255, 105, 180, 0.1);
+}
+.playlist-item:last-child {
+    border-bottom: none;
+}
+.playlist-item:hover {
+    background-color: rgba(255, 105, 180, 0.1);
+}
+.playlist-item.active {
+    background-color: rgba(255, 105, 180, 0.2);
+    font-weight: bold;
+}
+.playlist-item .title { color: var(--p3-white); font-size: x-small; }
+.playlist-item .artist { color: var(--p3-light-pink); font-size: 0.9rem; }
 
 /* --- Styling untuk Kontainer Navigasi --- */
 .nav-container {
@@ -379,12 +478,12 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    padding: 3rem 5rem;
+    padding: 2rem 5rem;
     box-sizing: border-box;
     z-index: 20;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    /* justify-content: center; */
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease-in;
@@ -412,25 +511,24 @@ body {
     margin-bottom: 2rem;
     border-bottom: 2px solid var(--p3-pink);
     padding-bottom: 1rem;
+    flex-shrink: 0;
 }
 
 .missions-list {
-    display: flex;
-    flex-direction: column;
+    display: flex; flex-direction: column;
     gap: 1.5rem;
+    overflow-y: auto; /* [PENTING] Menambahkan scrollbar jika konten berlebih */
+    padding-right: 1rem; /* Memberi ruang untuk scrollbar */
 }
 
 .mission-card {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    background-color: rgba(0, 156, 255, 0.05);
-    border-left: 5px solid var(--p3-pink);
-    padding: 1rem 1.5rem;
-    opacity: 0;
-    transform: translateX(-30px);
+    display: flex; align-items: center; gap: 2rem;
+    background-color: rgba(255, 105, 180, 0.05);
+    border-left: 5px solid var(--p3-pink); padding: 1rem 1.5rem;
+    opacity: 0; transform: translateX(-30px);
     transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
+
 
 @keyframes slideFromRight {
     from {
@@ -469,7 +567,7 @@ body {
 .mission-image img {
     width: 80px;
     height: 80px;
-    filter: invert(85%) sepia(88%) saturate(2331%) hue-rotate(179deg) brightness(106%) contrast(106%);
+    
 }
 
 .mission-text h3 {
@@ -486,18 +584,35 @@ body {
     line-height: 1.5;
 }
 
-/* --- Logika Visibilitas --- */
-.main-container.viewing-missions .nav-container {
-    opacity: 0;
-    transform: translateX(-50px);
-    pointer-events: none;
-    animation: none;
+/* [BARU] Styling untuk Scrollbar */
+.missions-list::-webkit-scrollbar {
+    width: 8px;
+}
+.missions-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.missions-list::-webkit-scrollbar-thumb {
+    background-color: var(--p3-pink);
+    border-radius: 10px;
+    border: 2px solid var(--p3-dark-pink);
 }
 
+
+/* --- Logika Visibilitas --- */
+/* --- Logika Visibilitas (DIPERBARUI) --- */
+.main-container.viewing-missions .nav-container,
+.main-container.viewing-missions .cube-container,
+.main-container.viewing-missions .media-player-container {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50px); /* Efek slide-out untuk semua */
+    animation: none;
+}
 .main-container.viewing-missions .mission-container {
     opacity: 1;
     pointer-events: auto;
 }
+
 
 /* --- Media Queries (Responsif) --- */
 @media (max-width: 768px) {
@@ -540,6 +655,33 @@ body {
         text-align: center;
     }
 
+        /* Posisikan ulang menu agar tidak tertimpa kubus */
+    .nav-container {
+        justify-content: center;
+        align-items: flex-end;
+        padding-bottom: 2rem;
+      top: 60%; height: 40%;
+        position: absolute;
+    }
+
+        /* [DIUBAH] Posisi dan animasi nav-container */
+    .nav-container {
+        position: absolute;
+        top: 55%; /* Posisi awal, menimpa bagian bawah galeri */
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        padding: 1.5rem;
+        box-sizing: border-box;
+        text-align: center;
+        background: linear-gradient(to top, var(--p3-dark-pink) 70%, transparent 100%);
+        transition: transform 0.5s ease-in-out;
+    }
+    .nav-container.player-active {
+        transform: translateY(25%); /* Geser ke bawah saat player aktif */
+    }
+
     .menu-header {
         font-size: 1.8rem;
         margin-bottom: 1rem;
@@ -574,15 +716,32 @@ body {
         display: none;
     }
 
-    .mission-container {
+.mission-container {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
         padding: 4rem 1.5rem 1.5rem 1.5rem;
+        /* [PENTING] Pastikan ini ada agar flex-grow berfungsi */
+        display: flex;
+        flex-direction: column; 
         justify-content: flex-start;
         overflow-y: auto;
+        background-color: var(--p3-dark-pink);
+        box-sizing: border-box;
     }
 
+    /* [BARU] Tambahkan selector ini jika belum ada */
+    .missions-list {
+        flex-grow: 1; /* <-- TAMBAHKAN BARIS INI */
+        overflow-y: auto; /* Pastikan bisa di-scroll */
+    }
     .back-button {
         top: 1.5rem;
         left: 1.5rem;
+        z-index: 55; /* Di atas mission-container */
     }
 
     .mission-title {
@@ -621,34 +780,44 @@ body {
         font-size: 0.9rem;
     }
 /* [BARU] Penyesuaian untuk kubus di mobile */
-    .cube-container {
-        /* Perkecil dan posisikan ulang kubus */
-        width: 150px;
-        height: 150px;
-        left: 50%;
-        top: 25%;
+   .cube-container {
+        width: 120px; height: 120px;
+        left: 50%; top: 48%; /* Tepat di antara galeri dan menu */
+        z-index: 12;
     }
     .cube {
         animation-duration: 20s; /* Putar sedikit lebih cepat */
     }
-    .face {
-        width: 150px;
-        height: 150px;
+   .face { width: 120px; height: 120px; }
+    .front  { transform: rotateY(  0deg) translateZ(60px); }
+    .back   { transform: rotateY(180deg) translateZ(60px); }
+    .right  { transform: rotateY( 90deg) translateZ(60px); }
+    .left   { transform: rotateY(-90deg) translateZ(60px); }
+    .top    { transform: rotateX( 90deg) translateZ(60px); }
+    .bottom { transform: rotateX(-90deg) translateZ(60px); }
+
+    .media-player-container {
+        flex-direction: column; left: 50%;
+       top: 60%; /* Posisi awal saat muncul */ width: 80%; padding: 0.8rem; gap: 0.5rem;
+        transform: translate(-50%, -50%) scale(0.9);
     }
-    .front  { transform: rotateY(  0deg) translateZ(75px); }
-    .back   { transform: rotateY(180deg) translateZ(75px); }
-    .right  { transform: rotateY( 90deg) translateZ(75px); }
-    .left   { transform: rotateY(-90deg) translateZ(75px); }
-    .top    { transform: rotateX( 90deg) translateZ(75px); }
-    .bottom { transform: rotateX(-90deg) translateZ(75px); }
+    .media-player-container.show { transform: translate(-50%, -50%) scale(1); }
+    .song-info { text-align: center; }
     
-    /* Posisikan ulang menu agar tidak tertimpa kubus */
-    .nav-container {
-        justify-content: center;
-        align-items: flex-end;
-        padding-bottom: 2rem;
-        height: 50%;
-        top: 50%;
-        position: absolute;
+
+    /* [PERUBAHAN UTAMA] Penyesuaian galeri di mobile */
+    .gallery-container {
+        width: 90vw; /* Lebar penuh */
+        height: auto; /* Tinggi otomatis menyesuaikan konten */
+        grid-template-columns: repeat(10, 1fr); /* 5 kolom */
+        grid-template-rows: auto; /* Baris otomatis */
+        top: 5%; /* Posisikan di atas */
+        left: 50%;
+        transform: translateX(-50%);
+        overflow-y: auto; /* Tambahkan scroll jika perlu */
     }
+    .gallery-item {
+        aspect-ratio: 1 / 1; /* Membuat setiap sel gambar menjadi persegi */
+    }
+
 }
