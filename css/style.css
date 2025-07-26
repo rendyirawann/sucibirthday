@@ -150,13 +150,79 @@ body {
     }
 }
 
+.splash-screen {
+position: fixed;
+top: 0;
+left: 0;
+width: 100vw;
+height: 100vh;
+background-color: var(--p3-dark-pink);
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+color: var(--p3-white);
+font-family: var(--font-primary);
+z-index: 110;
+opacity: 0;
+pointer-events: none;
+transition: opacity 1s ease-in-out;
+}
+
+.splash-screen.active {
+opacity: 1;
+pointer-events: auto;
+}
+
+.countdown {
+font-size: 5rem;
+font-weight: bold;
+margin-bottom: 2rem;
+text-shadow: 0 0 10px var(--p3-pink);
+}
+
+.birthday-message {
+font-size: 4rem;
+font-weight: 700;
+text-align: left; 
+white-space: nowrap; 
+overflow: hidden;
+margin-bottom: 1rem;
+text-shadow: 0 0 15px var(--p3-pink);
+}
+
+.birthday-message span {
+opacity: 0; 
+display: inline-block; 
+transform: translateX(-20px); 
+transition: opacity 0.3s ease-in-out, transform 0.5s ease-out; 
+}
+
+.birthday-message span.visible {
+opacity: 1; 
+transform: translateX(0); 
+}
+
+.gif-container {
+width: 300px; /* Sesuaikan ukuran GIF */
+height: auto;
+margin-top: 2rem;
+}
+
+.gif-container img {
+width: 100%;
+height: auto;
+display: block;
+border-radius: 10px;
+box-shadow: 0 0 20px var(--p3-pink);
+}
 
 /* --- Kontainer Utama & Latar Belakang --- */
 .main-container {
     position: relative; width: 100vw; height: 100vh;
     display: flex; justify-content: flex-start; align-items: center;
     background: transparent; color: var(--p3-white);
-    opacity: 0; transition: opacity 0.5s;
+    opacity: 0; transition: opacity 1s ease-in-out 1s;
     perspective: 1000px;
 }
 .main-container.visible { opacity: 1; }
@@ -207,10 +273,11 @@ body {
     transition: opacity 1s ease-in-out;
     display: grid;
     /* [DIUBAH] Grid diubah menjadi 10x10 untuk 100 gambar */
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(10, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     gap: 4px; /* Jarak antar gambar diperkecil */
     padding: 4px;
+    pointer-events: none; /* [PENTING] Tambahkan baris ini */
 }
 
 .main-container.visible .gallery-container {
@@ -584,6 +651,19 @@ body {
     line-height: 1.5;
 }
 
+/* [BARU] Styling untuk link Google Maps */
+.map-link {
+    color: var(--p3-pink); /* Warna link */
+    text-decoration: underline; /* Beri garis bawah */
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.map-link:hover {
+    color: var(--p3-light-pink); /* Ubah warna saat hover */
+}
+
 /* [BARU] Styling untuk Scrollbar */
 .missions-list::-webkit-scrollbar {
     width: 8px;
@@ -599,13 +679,14 @@ body {
 
 
 /* --- Logika Visibilitas --- */
-/* --- Logika Visibilitas (DIPERBARUI) --- */
+/* --- Logika Visibilitas --- */
 .main-container.viewing-missions .nav-container,
 .main-container.viewing-missions .cube-container,
-.main-container.viewing-missions .media-player-container {
+.main-container.viewing-missions .media-player-container,
+.main-container.viewing-missions .gallery-container { /* [BARU] Sembunyikan juga galeri */
     opacity: 0;
     pointer-events: none;
-    transform: translateX(-50px); /* Efek slide-out untuk semua */
+    transform: translateX(-50px);
     animation: none;
 }
 .main-container.viewing-missions .mission-container {
@@ -809,7 +890,7 @@ body {
     .gallery-container {
         width: 90vw; /* Lebar penuh */
         height: auto; /* Tinggi otomatis menyesuaikan konten */
-        grid-template-columns: repeat(10, 1fr); /* 5 kolom */
+        grid-template-columns: repeat(5, 1fr); /* 5 kolom */
         grid-template-rows: auto; /* Baris otomatis */
         top: 5%; /* Posisikan di atas */
         left: 50%;
