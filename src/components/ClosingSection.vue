@@ -27,11 +27,7 @@ onUnmounted(() => ctx?.revert())
     <div class="closing-stagger closing-heart text-5xl">🤍</div>
     <h2 class="closing-stagger script-title mt-4 text-6xl md:text-8xl">{{ closing.script }}</h2>
     <p class="closing-stagger mt-5 max-w-md text-inksoft md:text-lg">{{ closing.note }}</p>
-    <div
-      class="closing-stagger mt-8 rounded-full border border-rose/25 bg-white/70 px-7 py-2.5 font-semibold text-rose shadow-sm backdrop-blur"
-    >
-      {{ eventInfo.day }}, {{ eventInfo.dateLong }}
-    </div>
+    <p class="closing-stagger eyebrow mt-8">{{ eventInfo.day }} · {{ eventInfo.dateLong }}</p>
     <p class="closing-stagger mt-14 text-xs tracking-[0.25em] text-inksoft/70 uppercase">
       made with 🤍 · 2026
     </p>

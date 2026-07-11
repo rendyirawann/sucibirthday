@@ -13,7 +13,7 @@ let disposeLazy
 onMounted(() => {
   disposeLazy = lazyPlayVideos(root.value)
   ctx = gsap.context(() => {
-    revealUp('.cube-head, .cube-stage', { trigger: root.value })
+    revealUp('.cube-stagger', { trigger: root.value })
     gsap.to(cube.value, {
       rotationY: 360,
       rotationX: 360,
@@ -31,21 +31,29 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section ref="root" class="relative px-6 py-20 text-center md:py-28">
-    <div
-      class="pointer-events-none absolute top-1/2 left-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-petal opacity-50 blur-3xl"
-    ></div>
+  <section ref="root" class="relative px-6 py-20 md:px-12 md:py-28 lg:px-16">
+    <div class="grid items-center gap-12 md:grid-cols-2">
+      <!-- kiri: teks -->
+      <div>
+        <p class="cube-stagger eyebrow">03 — little moments</p>
+        <h2 class="cube-stagger script-title mt-4 text-6xl md:text-7xl">Little Moments</h2>
+        <p class="cube-stagger mt-4 max-w-md text-inksoft md:text-lg">
+          memory cube — video-video kecil kita, terus berputar tanpa henti 🤍
+        </p>
+      </div>
 
-    <div class="cube-head relative mx-auto mb-14 max-w-xl">
-      <h2 class="script-title text-6xl md:text-7xl">Little Moments</h2>
-      <p class="mt-3 text-inksoft">memory cube — video-video kecil kita, terus berputar 🤍</p>
-    </div>
-
-    <div class="cube-stage relative mx-auto cube-anchor">
-      <div ref="cube" class="cube">
-        <div v-for="v in cubeVideos" :key="v.face" class="face" :class="v.face">
-          <!-- data-lazy: diputar/dijeda otomatis saat masuk/keluar viewport -->
-          <video :src="asset(v.src)" data-lazy preload="metadata" loop muted playsinline></video>
+      <!-- kanan: kubus -->
+      <div class="relative flex justify-center md:justify-start">
+        <div
+          class="pointer-events-none absolute top-1/2 left-1/2 h-[380px] w-[380px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-petal opacity-50 blur-3xl"
+        ></div>
+        <div class="cube-stagger cube-anchor relative">
+          <div ref="cube" class="cube">
+            <div v-for="v in cubeVideos" :key="v.face" class="face" :class="v.face">
+              <!-- data-lazy: diputar/dijeda otomatis saat masuk/keluar viewport -->
+              <video :src="asset(v.src)" data-lazy preload="metadata" loop muted playsinline></video>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -59,10 +67,12 @@ onUnmounted(() => {
   width: var(--cube-size);
   height: var(--cube-size);
   perspective: 1000px;
+  margin: 3rem auto;
 }
 @media (min-width: 768px) {
   .cube-anchor {
     --cube-size: 280px;
+    margin: 4rem 0 4rem 25%;
   }
 }
 

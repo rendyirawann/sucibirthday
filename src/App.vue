@@ -5,6 +5,7 @@ import { gsap, ScrollTrigger } from './lib/scroll'
 import IntroOverlay from './components/IntroOverlay.vue'
 import FloatingBits from './components/FloatingBits.vue'
 import FloatingMemories from './components/FloatingMemories.vue'
+import MarqueeStrip from './components/MarqueeStrip.vue'
 import HeroSection from './components/HeroSection.vue'
 import LetterSection from './components/LetterSection.vue'
 import PolaroidGallery from './components/PolaroidGallery.vue'
@@ -51,6 +52,7 @@ function onOpen() {
 
   <main class="relative z-10">
     <HeroSection :opened="opened" />
+    <MarqueeStrip />
     <LetterSection />
     <PolaroidGallery />
     <CubeSection />
