@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --color-p3-pink: #ff69b4;
+  --color-p3-dark: #5d0f42;
+  --color-p3-light: #ffc0cb;
+  --color-p3-white: #f0f8ff;
+  --font-teko: "Teko", sans-serif;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-teko);
+  overflow: hidden;
+  background: radial-gradient(ellipse at bottom, var(--color-p3-dark) 0%, #000000 100%);
+  color: var(--color-p3-white);
+}
+
+/* Scrollbar tema pink (playlist & daftar misi) */
+.themed-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.themed-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.themed-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-p3-pink);
+  border-radius: 10px;
+  border: 2px solid var(--color-p3-dark);
+}
+
+/* Link Google Maps di dalam teks misi (dirender via v-html) */
+.map-link {
+  color: var(--color-p3-pink);
+  text-decoration: underline;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+.map-link:hover {
+  color: var(--color-p3-light);
+}
+
+.text-glow-pink {
+  text-shadow: 0 0 10px var(--color-p3-pink);
+}
+.text-glow-pink-lg {
+  text-shadow: 0 0 15px var(--color-p3-pink), 0 0 40px rgba(255, 105, 180, 0.5);
+}
