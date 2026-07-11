@@ -16,11 +16,23 @@ npm run preview  # preview hasil build
 
 ## Deploy
 
-Push ke branch `main` otomatis men-deploy ke GitHub Pages lewat GitHub Actions
-(lihat `.github/workflows/deploy.yml`).
+```bash
+npm run deploy   # build lalu push hasil build ke branch gh-pages
+```
 
-> Catatan: sumber Pages harus diset ke **GitHub Actions**
-> (Settings → Pages → Build and deployment → Source), bukan "Deploy from a branch".
+Sumber Pages harus diset ke branch **gh-pages** (root):
+Settings → Pages → Build and deployment → Deploy from a branch → `gh-pages` / `/ (root)`,
+atau via CLI:
+
+```bash
+gh api -X PUT repos/rendyirawann/sucibirthday/pages -f build_type=legacy -f "source[branch]=gh-pages" -f "source[path]=/"
+```
+
+> Alternatif: deploy otomatis lewat GitHub Actions. File workflow-nya sudah
+> disiapkan di `.github/workflows/deploy.yml` (belum di-commit karena butuh
+> token dengan scope `workflow`). Jika mau memakainya: jalankan
+> `gh auth refresh -s workflow`, commit file tersebut, lalu set sumber Pages
+> ke "GitHub Actions".
 
 ## Struktur
 
