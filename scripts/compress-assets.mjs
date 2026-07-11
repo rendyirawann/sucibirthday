@@ -1,19 +1,21 @@
 import sharp from 'sharp'
 import ffmpegPath from 'ffmpeg-static'
 import { execFileSync } from 'node:child_process'
-import { statSync, readFileSync, writeFileSync, copyFileSync, unlinkSync } from 'node:fs'
+import { existsSync, statSync, readFileSync, writeFileSync, copyFileSync, unlinkSync } from 'node:fs'
 
 const results = []
 
-// 1) Galeri: auto-rotate (EXIF), resize maks 720px, mozjpeg q80.
+// 1) Galeri: auto-rotate (EXIF), resize maks 1080px, mozjpeg q80.
+//    (1080px supaya foto besar full-width di Memory Lane tetap tajam.)
 //    Hanya menimpa bila hasilnya lebih kecil.
 for (let i = 1; i <= 25; i++) {
   const p = `public/img/gallery/${i}.jpg`
+  if (!existsSync(p)) continue
   const before = statSync(p).size
   // Baca ke buffer dulu supaya sharp tidak memegang handle file saat ditimpa
   const buf = await sharp(readFileSync(p))
     .rotate()
-    .resize({ width: 720, height: 720, fit: 'inside', withoutEnlargement: true })
+    .resize({ width: 1080, height: 1080, fit: 'inside', withoutEnlargement: true })
     .jpeg({ quality: 80, mozjpeg: true })
     .toBuffer()
   if (buf.length < before) writeFileSync(p, buf)
@@ -35,6 +37,7 @@ const pngs = [
 ]
 for (const [name, size] of pngs) {
   const p = `public/img/${name}`
+  if (!existsSync(p)) continue // PNG asli sudah dihapus setelah konversi pertama
   const out = p.replace(/\.png$/, '.webp')
   const before = statSync(p).size
   await sharp(readFileSync(p))
@@ -54,7 +57,9 @@ for (let i = 1; i <= 6; i++) {
   execFileSync(ffmpegPath, ['-y', '-i', p, '-an', '-c:v', 'libx264', '-crf', '23', '-preset', 'slow', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', re], { stdio: 'pipe' })
   execFileSync(ffmpegPath, ['-y', '-i', p, '-an', '-c:v', 'copy', '-movflags', '+faststart', cp], { stdio: 'pipe' })
   const best = [[statSync(re).size, re], [statSync(cp).size, cp]].sort((a, b) => a[0] - b[0])[0]
-  if (best[0] < before) copyFileSync(best[1], p)
+  // Timpa hanya bila hematnya > 10% — mencegah re-encode berulang
+  // (generational loss) pada video yang sudah pernah dikompres.
+  if (best[0] < before * 0.9) copyFileSync(best[1], p)
   unlinkSync(re)
   unlinkSync(cp)
   results.push([p, before, Math.min(best[0], before)])

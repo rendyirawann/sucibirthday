@@ -53,9 +53,9 @@ Kalau menambah foto galeri / gambar / video baru, jalankan:
 node scripts/compress-assets.mjs
 ```
 
-Foto galeri di-resize ke 720px (mozjpeg q80, auto-rotate EXIF), gambar misi jadi
-WebP 240px, video di-encode ulang tanpa track audio (kubus selalu muted) dengan
-`+faststart`. Hanya menimpa bila hasilnya lebih kecil.
+Foto galeri di-resize ke 1080px (mozjpeg q80, auto-rotate EXIF), video di-encode
+ulang tanpa track audio (kubus selalu muted) dengan `+faststart`. Hanya menimpa
+bila hematnya berarti, supaya tidak terjadi re-encode berulang.
 
 ## Struktur
 

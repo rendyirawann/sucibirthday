@@ -34,18 +34,8 @@ export const photos = Array.from({ length: 25 }, (_, i) => ({
   caption: '',
 }))
 
-// Memory bubbles — campuran foto & video yang melayang.
-// type: 'image' | 'video'
-export const bubbles = [
-  { type: 'video', src: 'video/2.mp4' },
-  { type: 'image', src: 'img/gallery/3.jpg' },
-  { type: 'image', src: 'img/gallery/8.jpg' },
-  { type: 'video', src: 'video/5.mp4' },
-  { type: 'image', src: 'img/gallery/13.jpg' },
-  { type: 'image', src: 'img/gallery/18.jpg' },
-  { type: 'video', src: 'video/3.mp4' },
-  { type: 'image', src: 'img/gallery/21.jpg' },
-]
+// Memory bubbles melayang di seluruh halaman — isinya otomatis
+// diambil bergantian dari semua foto galeri + video di atas.
 
 // Kubus memory 3D (6 sisi video)
 export const cubeVideos = [
@@ -71,8 +61,8 @@ export const playlist = [
   { title: 'Blessed', artist: 'Daniel Cesar', src: 'audio/blessed.mp3' },
 ]
 
-// Lagu pertama yang diputar saat halaman dibuka
-export const initialTrackIndex = 8
+// Lagu pertama yang diputar saat halaman dibuka: Cahaya - TULUS
+export const initialTrackIndex = 9
 
 // Video montase di bagian akhir. Untuk menggantinya dengan video buatanmu:
 // timpa file public/video/memories-2026.mp4 (dan poster-nya bila mau).
