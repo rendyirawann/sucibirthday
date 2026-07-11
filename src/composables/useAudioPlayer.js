@@ -66,5 +66,8 @@ export function useAudioPlayer() {
     next,
     prev,
     select,
+    // Untuk menjeda musik latar saat video montase diputar
+    pause: () => audio.pause(),
+    resume: play,
   }
 }

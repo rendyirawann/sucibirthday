@@ -1,3 +1,62 @@
+// ===============================================================
+//  SEMUA KONTEN SITUS ADA DI FILE INI — edit di sini saja.
+//  Menambah foto : taruh file di public/img/... lalu daftarkan
+//  Menambah video: taruh file di public/video/... lalu daftarkan
+//  Setelah menambah media, jalankan: node scripts/compress-assets.mjs
+// ===============================================================
+
+export const eventInfo = {
+  day: 'Monday',
+  dateLong: '27 July 2026',
+  dateDots: '27 · 07 · 2026',
+}
+
+export const hero = {
+  script: 'Happy Birthday',
+  name: 'Suci Wulandari',
+  sub: 'my lovelyy cute girlfriend >.<',
+}
+
+// Surat kecil — silakan personalisasi kata-katanya 🤍
+export const letter = {
+  greeting: 'Untuk sayangku,',
+  paragraphs: [
+    'Selamat ulang tahun, sayang. Setahun lagi berlalu, dan rasanya setiap harinya jadi cerita yang pengen aku simpan terus.',
+    'Halaman ini kecil saja — kumpulan potongan memori kita. Scroll pelan-pelan ya, sambil dengerin lagu-lagunya. 🤍',
+  ],
+  closing: 'with love, always',
+}
+
+// Foto-foto memory lane. Tambahkan { src, caption } baru di sini.
+// caption boleh dikosongkan ('').
+export const photos = Array.from({ length: 25 }, (_, i) => ({
+  src: `img/gallery/${i + 1}.jpg`,
+  caption: '',
+}))
+
+// Memory bubbles — campuran foto & video yang melayang.
+// type: 'image' | 'video'
+export const bubbles = [
+  { type: 'video', src: 'video/2.mp4' },
+  { type: 'image', src: 'img/gallery/3.jpg' },
+  { type: 'image', src: 'img/gallery/8.jpg' },
+  { type: 'video', src: 'video/5.mp4' },
+  { type: 'image', src: 'img/gallery/13.jpg' },
+  { type: 'image', src: 'img/gallery/18.jpg' },
+  { type: 'video', src: 'video/3.mp4' },
+  { type: 'image', src: 'img/gallery/21.jpg' },
+]
+
+// Kubus memory 3D (6 sisi video)
+export const cubeVideos = [
+  { face: 'front', src: 'video/1.mp4' },
+  { face: 'back', src: 'video/2.mp4' },
+  { face: 'right', src: 'video/3.mp4' },
+  { face: 'left', src: 'video/5.mp4' },
+  { face: 'top', src: 'video/4.mp4' },
+  { face: 'bottom', src: 'video/6.mp4' },
+]
+
 export const playlist = [
   { title: 'Everything You Are', artist: 'Hindia', src: 'audio/hindia.mp3' },
   { title: 'Kita Usahakan Rumah Itu', artist: 'Sal Priadi', src: 'audio/kitausahakanrumahitu.mp3' },
@@ -12,61 +71,20 @@ export const playlist = [
   { title: 'Blessed', artist: 'Daniel Cesar', src: 'audio/blessed.mp3' },
 ]
 
-// Lagu pertama yang diputar saat pintu dibuka (sama seperti versi asli)
+// Lagu pertama yang diputar saat halaman dibuka
 export const initialTrackIndex = 8
 
-export const eventInfo = { date: 'July 27', day: 'Sunday', year: '2025' }
+// Video montase di bagian akhir. Untuk menggantinya dengan video buatanmu:
+// timpa file public/video/memories-2026.mp4 (dan poster-nya bila mau).
+// Untuk membuat ulang montase otomatis: node scripts/make-memory-video.mjs
+export const finale = {
+  title: 'A Little Film',
+  sub: 'sembilan puluh detik tentang kita — tekan play 🤍',
+  src: 'video/memories-2026.mp4',
+  poster: 'img/memories-poster.jpg',
+}
 
-export const menuItems = [
-  {
-    id: 'mission',
-    name: 'Goals',
-    desc: "Celebrate Suci Wulandari's Birthday <br>(My Lovelyy cute girlfriend >.<)!",
-  },
-  {
-    id: 'datetime',
-    name: 'DATE & TIME',
-    desc: 'Sunday, 27 July 2025 // 00:00 AM Onwards',
-  },
-  {
-    id: 'dresscode',
-    name: 'DRESS CODE',
-    desc: 'Top White and Blue Jeans',
-  },
-]
-
-export const missions = [
-  {
-    title: '01: Arrive On Time',
-    image: 'img/mission_1a.webp',
-    html: 'Jemput suci sayang <a href="https://maps.app.goo.gl/UN1Qpe4in9kMVbUQ7" target="_blank" class="map-link">kerumah sucii</a>, jangan sampai telat! kalau bisa datang sebelum jam 12 siang!',
-  },
-  {
-    title: '02: Enjoy The Sushi',
-    image: 'img/mission_2a.webp',
-    html: 'Sayang nakk mam sushi, pergi ke tempat mam <a href="https://maps.app.goo.gl/ee9fP9VK6yMLvV2E7" target="_blank" class="map-link">sushi tei</a> yg ada di sun plaza',
-  },
-  {
-    title: '03: Capture the Memories',
-    image: 'img/mission_4a.webp',
-    html: 'Udah kenyang, lanjut foto fotoo di <a href="https://maps.app.goo.gl/QjjYLWgvYkhCxiZU6" target="_blank" class="map-link">selfie time</a> di sun plaza (udah kepengen dari beberapa bulan lalu foto disini)',
-  },
-  {
-    title: '04: Cafe & Gift',
-    image: 'img/mission_3.webp',
-    html: 'Haa sekarang kita foto foto dan buka kado di <a href="https://maps.app.goo.gl/LQLGVjE2LepUc2AA8" target="_blank" class="map-link">Cafe Koora</a> yeayyyy',
-  },
-]
-
-export const galleryCount = 25
-
-export const cubeVideos = [
-  { face: 'front', src: 'video/1.mp4' },
-  { face: 'back', src: 'video/2.mp4' },
-  { face: 'right', src: 'video/3.mp4' },
-  { face: 'left', src: 'video/5.mp4' },
-  { face: 'top', src: 'video/4.mp4' },
-  { face: 'bottom', src: 'video/6.mp4' },
-]
-
-export const birthdayText = 'HAPPY BIRTHDAY SAYANGKUU!! SUCI WULANDARI'
+export const closing = {
+  script: 'see you on your day',
+  note: 'Sampai ketemu tanggal 27 Juli ya, sayang. 🤍',
+}

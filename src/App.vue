@@ -1,27 +1,64 @@
 <script setup>
-import { ref } from 'vue'
-import PetalField from './components/PetalField.vue'
-import DoorEntrance from './components/DoorEntrance.vue'
-import SplashScreen from './components/SplashScreen.vue'
-import MainScreen from './components/MainScreen.vue'
+import { onMounted, ref } from 'vue'
+import Lenis from 'lenis'
+import { gsap, ScrollTrigger } from './lib/scroll'
+import IntroOverlay from './components/IntroOverlay.vue'
+import FloatingBits from './components/FloatingBits.vue'
+import HeroSection from './components/HeroSection.vue'
+import LetterSection from './components/LetterSection.vue'
+import PolaroidGallery from './components/PolaroidGallery.vue'
+import CubeSection from './components/CubeSection.vue'
+import BubbleSection from './components/BubbleSection.vue'
+import PlaylistSection from './components/PlaylistSection.vue'
+import VideoFinale from './components/VideoFinale.vue'
+import ClosingSection from './components/ClosingSection.vue'
+import MiniPlayer from './components/MiniPlayer.vue'
+import Lightbox from './components/Lightbox.vue'
 import { useAudioPlayer } from './composables/useAudioPlayer'
+import { lenisRef } from './lib/lenisRef'
 
-// Alur: door -> splash -> main
-const stage = ref('door')
-const doorVisible = ref(true)
+const opened = ref(false)
+const introVisible = ref(true)
 const { start } = useAudioPlayer()
+let lenis
 
-function onDoorOpen() {
-  // Dipanggil sinkron dari klik user, jadi autoplay audio diizinkan browser
+onMounted(() => {
+  // Smooth scroll (Lenis) + sinkron dengan ScrollTrigger
+  lenis = new Lenis({ duration: 1.15 })
+  lenisRef.current = lenis
+  lenis.on('scroll', ScrollTrigger.update)
+  gsap.ticker.add((time) => lenis.raf(time * 1000))
+  gsap.ticker.lagSmoothing(0)
+  lenis.stop() // terkunci selama intro
+})
+
+function onOpen() {
+  // Dipanggil sinkron dari klik user — autoplay musik diizinkan browser
   start()
-  stage.value = 'splash'
+  opened.value = true
+  lenis?.start()
+  window.scrollTo(0, 0)
+  ScrollTrigger.refresh()
 }
 </script>
 
 <template>
-  <PetalField />
-  <SplashScreen v-if="stage === 'splash'" @done="stage = 'main'" />
-  <MainScreen v-if="stage === 'main'" />
-  <!-- Pintu dirender terakhir (z tertinggi) dan tetap ada selama animasi keluar -->
-  <DoorEntrance v-if="doorVisible" @open="onDoorOpen" @gone="doorVisible = false" />
+  <!-- Gradien latar dipasang fixed (background-attachment:fixed diabaikan iOS) -->
+  <div class="bg-scene pointer-events-none fixed inset-0"></div>
+  <FloatingBits />
+
+  <main class="relative z-10">
+    <HeroSection :opened="opened" />
+    <LetterSection />
+    <PolaroidGallery />
+    <CubeSection />
+    <BubbleSection />
+    <PlaylistSection />
+    <VideoFinale />
+    <ClosingSection />
+  </main>
+
+  <MiniPlayer v-if="opened" />
+  <Lightbox />
+  <IntroOverlay v-if="introVisible" @open="onOpen" @gone="introVisible = false" />
 </template>

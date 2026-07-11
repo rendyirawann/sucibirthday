@@ -34,6 +34,17 @@ gh api -X PUT repos/rendyirawann/sucibirthday/pages -f build_type=legacy -f "sou
 > `gh auth refresh -s workflow`, commit file tersebut, lalu set sumber Pages
 > ke "GitHub Actions".
 
+## Video montase ("A Little Film")
+
+Video 90 detik di bagian akhir dibuat otomatis dari semua foto galeri + video:
+
+```bash
+node scripts/make-memory-video.mjs
+```
+
+Untuk memakai video buatanmu sendiri: cukup timpa `public/video/memories-2026.mp4`
+(dan `public/img/memories-poster.jpg` untuk gambar sampulnya).
+
 ## Kompresi aset
 
 Kalau menambah foto galeri / gambar / video baru, jalankan:
