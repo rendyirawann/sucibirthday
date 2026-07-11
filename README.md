@@ -34,6 +34,18 @@ gh api -X PUT repos/rendyirawann/sucibirthday/pages -f build_type=legacy -f "sou
 > `gh auth refresh -s workflow`, commit file tersebut, lalu set sumber Pages
 > ke "GitHub Actions".
 
+## Kompresi aset
+
+Kalau menambah foto galeri / gambar / video baru, jalankan:
+
+```bash
+node scripts/compress-assets.mjs
+```
+
+Foto galeri di-resize ke 720px (mozjpeg q80, auto-rotate EXIF), gambar misi jadi
+WebP 240px, video di-encode ulang tanpa track audio (kubus selalu muted) dengan
+`+faststart`. Hanya menimpa bila hasilnya lebih kecil.
+
 ## Struktur
 
 - `src/components/` — komponen layar (pintu masuk, splash, menu utama, misi, dll.)
