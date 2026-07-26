@@ -66,19 +66,19 @@ Durasi tiap foto dihitung otomatis supaya totalnya pas target.
 Untuk memakai video buatanmu sendiri: cukup timpa `public/video/memories-2026.mp4`
 (dan `public/img/memories-poster.jpg` untuk gambar sampulnya).
 
-## Kolase foto hitam-putih
+## Kolase foto untuk Instagram Story
 
 ```bash
 node scripts/make-collage.mjs
 ```
 
-Menghasilkan papan kenangan 7x7 (49 foto pilihan) di `media-src/export/`:
-`kolase-suci.jpg` (2892x3887, untuk dicetak) dan `kolase-suci-share.jpg`
-(1440px, untuk dikirim/diunggah).
+Menghasilkan `media-src/export/kolase-suci-story.jpg` — 1080x1920 (pas
+layar penuh IG Story): 35 foto hitam-putih hangat dalam bingkai polaroid
+putih yang dimiringkan acak, bayangan pink lembut, di atas kertas pink.
 
 Daftar fotonya ada di konstanta `SELECTED` — angkanya adalah urutan foto
 (0–24 = galeri lama, 25+ = hasil impor addon). Foto landscape otomatis
-ditampilkan utuh di atas kertas supaya tidak ada wajah yang terpotong.
+ditampilkan utuh supaya tidak ada wajah yang terpotong.
 
 ## Kompresi aset
 

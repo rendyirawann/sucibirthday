@@ -1,11 +1,10 @@
-// Kolase foto hitam-putih di atas kertas krem — gaya papan kenangan.
-// Foto dipilih manual (lihat SELECTED): potret terbaik Suci + foto berdua.
+// Kolase foto untuk Instagram Story (1080x1920).
+// Foto hitam-putih hangat dalam bingkai polaroid putih, dimiringkan
+// sedikit-sedikit dengan bayangan lembut di atas kertas pink. Tanpa teks.
 //
 // Jalankan: node scripts/make-collage.mjs
 import sharp from 'sharp'
-import ffmpegPath from 'ffmpeg-static'
-import { execFileSync } from 'node:child_process'
-import { existsSync, mkdirSync, readFileSync, rmSync, statSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, statSync } from 'node:fs'
 
 // Urutan sumber = 25 foto galeri lama, lalu 103 foto hasil impor addon.
 const ALL = [
@@ -13,139 +12,142 @@ const ALL = [
   ...Array.from({ length: 103 }, (_, i) => `public/img/gallery/addon/${String(i + 1).padStart(3, '0')}.jpg`),
 ]
 
-// 49 foto pilihan: potret Suci diselang-seling dengan foto berdua supaya
-// susunannya tidak menumpuk di satu sisi.
+// 35 foto pilihan: potret Suci diselang-seling dengan foto berdua.
 const SELECTED = [
-  36, 5, 43, 17, 91, 19, 64,
-  120, 70, 44, 13, 101, 89, 52,
-  14, 62, 31, 84, 118, 49, 15,
-  78, 11, 92, 39, 112, 77, 40,
-  20, 107, 8, 102, 88, 55, 97,
-  115, 50, 119, 65, 33, 113, 72,
-  127, 114, 111, 80, 29, 75, 69,
+  36, 5, 43, 17, 91,
+  19, 64, 70, 44, 13,
+  101, 89, 52, 14, 62,
+  31, 84, 118, 49, 15,
+  11, 92, 77, 40, 107,
+  102, 88, 55, 97, 119,
+  113, 111, 75, 127, 69,
 ]
 
-// Potongan khusus untuk foto yang subjeknya tidak di tengah bingkai.
-// Kunci = indeks di ALL, nilai = posisi crop sharp.
-const CROP = {
-  92: 'bottom',
-  31: 'bottom',
-  20: 'bottom',
-  114: 'bottom',
-  112: 'bottom',
-}
+// Potongan khusus untuk foto yang subjeknya tidak di tengah bingkai
+const CROP = { 92: 'bottom', 31: 'bottom', 20: 'bottom', 114: 'bottom', 112: 'bottom' }
 
-const COLS = 7
-const CELL_W = 380
-const CELL_H = 475 // potret 4:5
-const GAP = 12
-const MARGIN = 80
-const HEADER = 300
-const FOOTER = 110
-const PAPER = '#f2ece1'
-
+const W = 1080
+const H = 1920
+const COLS = 5
 const ROWS = Math.ceil(SELECTED.length / COLS)
-const W = MARGIN * 2 + COLS * CELL_W + (COLS - 1) * GAP
-const H = MARGIN + HEADER + ROWS * CELL_H + (ROWS - 1) * GAP + FOOTER
+
+const PAD = 9 // tepi putih polaroid
+const PAD_BOTTOM = 24 // tepi bawah lebih tebal, ciri khas polaroid
+const PHOTO_W = 158
+const PHOTO_H = 196 // ~4:5
+const CARD_W = PHOTO_W + PAD * 2
+const CARD_H = PHOTO_H + PAD + PAD_BOTTOM
+
+const MARGIN_X = 30
+const MARGIN_Y = 54
+const CELL_W = (W - MARGIN_X * 2) / COLS
+const CELL_H = (H - MARGIN_Y * 2) / ROWS
 
 const OUT_DIR = 'media-src/export'
-const TMP = 'scripts/.collagetmp.png'
-const OUT = `${OUT_DIR}/kolase-suci.jpg`
-
+const OUT = `${OUT_DIR}/kolase-suci-story.jpg`
 mkdirSync(OUT_DIR, { recursive: true })
 
-console.log(`${SELECTED.length} foto -> ${COLS}x${ROWS}, kanvas ${W}x${H}`)
+// Kemiringan & geseran kecil yang tetap sama tiap kali dijalankan
+const jitter = (i, span) => (((i * 2654435761) % 1000) / 1000 - 0.5) * 2 * span
 
-const comps = []
+const svg = (s) => Buffer.from(s)
+const roundRect = (w, h, r, fill, extra = '') =>
+  svg(`<svg width="${w}" height="${h}"><rect width="${w}" height="${h}" rx="${r}" ry="${r}" fill="${fill}" ${extra}/></svg>`)
+
+console.log(`${SELECTED.length} foto -> ${COLS}x${ROWS} pada kanvas ${W}x${H}`)
+
+const layers = []
+
 for (let i = 0; i < SELECTED.length; i++) {
   const src = ALL[SELECTED[i]]
   if (!existsSync(src)) {
     console.log(`lewati (tidak ada): ${src}`)
     continue
   }
+
   const meta = await sharp(readFileSync(src), { failOn: 'none' }).metadata()
   const rotated = meta.orientation > 4
   const ratio = (rotated ? meta.height : meta.width) / (rotated ? meta.width : meta.height)
   const landscape = ratio > 1.05
 
-  const tone = (p) =>
-    p
-      .grayscale()
-      .linear(1.12, -14) // kontras hitam-putih yang lebih tegas
-      .tint('#fffaf2') // hangat tipis agar menyatu dengan kertas krem
-
-  // Foto landscape ditampilkan utuh — kalau dipotong jadi potret, salah satu
-  // wajah pasti hilang.
-  let buf = await tone(
-    sharp(readFileSync(src), { failOn: 'none' })
-      .rotate()
-      .resize(CELL_W, CELL_H, {
-        fit: landscape ? 'inside' : 'cover',
-        position: CROP[SELECTED[i]] || 'centre',
-      }),
-  )
+  // Foto landscape ditampilkan utuh — dipotong ke bingkai potret selalu
+  // memakan salah satu wajah. Sisanya dipotong dari tengah.
+  let photo = await sharp(readFileSync(src), { failOn: 'none' })
+    .rotate()
+    .resize(PHOTO_W, PHOTO_H, {
+      fit: landscape ? 'inside' : 'cover',
+      position: CROP[SELECTED[i]] || 'centre',
+    })
+    .grayscale()
+    .linear(1.1, -12)
+    .tint('#fff7ee') // hitam-putih hangat, bukan abu-abu dingin
     .png()
     .toBuffer()
 
   if (landscape) {
-    // Ditempel di atas kotak kertas. Tidak memakai background bawaan resize:
-    // sharp menerapkan grayscale/tint SETELAH resize, jadi bilahnya akan
-    // ikut memutih dan warnanya meleset dari kanvas.
-    buf = await sharp({
-      create: { width: CELL_W, height: CELL_H, channels: 3, background: PAPER },
+    photo = await sharp({
+      create: { width: PHOTO_W, height: PHOTO_H, channels: 3, background: '#ffffff' },
     })
-      .composite([{ input: buf, gravity: 'centre' }])
+      .composite([{ input: photo, gravity: 'centre' }])
       .png()
       .toBuffer()
   }
 
-  comps.push({
-    input: buf,
-    left: MARGIN + (i % COLS) * (CELL_W + GAP),
-    top: MARGIN + HEADER + Math.floor(i / COLS) * (CELL_H + GAP),
+  // Kartu polaroid: kertas putih membulat + foto di dalamnya
+  const card = await sharp({
+    create: { width: CARD_W, height: CARD_H, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
   })
-  if ((i + 1) % 14 === 0) console.log(`  ${i + 1}/${SELECTED.length}`)
+    .composite([
+      { input: roundRect(CARD_W, CARD_H, 9, '#ffffff'), top: 0, left: 0 },
+      { input: photo, top: PAD, left: PAD },
+    ])
+    .png()
+    .toBuffer()
+
+  const angle = jitter(i + 1, 5)
+  const tilted = await sharp(card)
+    .rotate(angle, { background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .png()
+    .toBuffer()
+
+  // Bayangan: kartu hitam kabur, dimiringkan sama, digeser sedikit ke bawah
+  const shadow = await sharp(roundRect(CARD_W, CARD_H, 9, '#c98aa6', 'opacity="0.55"'))
+    .rotate(angle, { background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .blur(7)
+    .png()
+    .toBuffer()
+
+  const tm = await sharp(tilted).metadata()
+  const cx = MARGIN_X + (i % COLS) * CELL_W + CELL_W / 2 + jitter(i + 7, 4)
+  const cy = MARGIN_Y + Math.floor(i / COLS) * CELL_H + CELL_H / 2 + jitter(i + 13, 4)
+  const left = Math.round(cx - tm.width / 2)
+  const top = Math.round(cy - tm.height / 2)
+
+  layers.push({ input: shadow, left, top: top + 5 })
+  layers.push({ input: tilted, left, top })
 }
 
-await sharp({ create: { width: W, height: H, channels: 3, background: PAPER } })
-  .composite(comps)
-  .png()
-  .toFile(TMP)
-
-// Teks ditulis dengan ffmpeg (font sistem terbaca pasti, tidak seperti SVG)
-const FONT = 'C\\:/Windows/Fonts/constan.ttf'
-const FONT_I = 'C\\:/Windows/Fonts/constani.ttf'
-const INK = '0x3a2f33'
-
-const text = [
-  { t: 'M O N D A Y   ·   2 7   J U L Y   2 0 2 6', size: 26, y: 96, font: FONT, alpha: 0.55 },
-  { t: 'Suci Wulandari', size: 104, y: 140, font: FONT_I, alpha: 0.95 },
-  { t: 'a year and a half later, almost two on our journey', size: 32, y: 268, font: FONT_I, alpha: 0.6 },
-]
-  .map(
-    (l) =>
-      `drawtext=fontfile='${l.font}':text='${l.t}':fontcolor=${INK}@${l.alpha}:` +
-      `fontsize=${l.size}:x=(w-text_w)/2:y=${l.y}`,
+// Hati kecil merah muda yang berserak di sela-sela kartu
+const heart = (size, op) =>
+  svg(
+    `<svg width="${size}" height="${size}" viewBox="0 0 24 24">` +
+      `<path fill="#f2a9c4" opacity="${op}" d="M12 21s-6.7-4.3-9.3-8.1C.6 9.7 2 5.6 5.6 4.7c2.1-.5 4.2.4 5.4 2.1h2c1.2-1.7 3.3-2.6 5.4-2.1 3.6.9 5 5 2.9 8.2C18.7 16.7 12 21 12 21z"/></svg>`,
   )
-  .concat([
-    `drawtext=fontfile='${FONT}':text='made with love by abang rendy':` +
-      `fontcolor=${INK}@0.4:fontsize=24:x=(w-text_w)/2:y=${H - 78}`,
-  ])
-  .join(',')
+const HEARTS = [
+  [42, 26, 20, 0.5], [1010, 120, 14, 0.45], [22, 640, 16, 0.4],
+  [1036, 780, 20, 0.5], [30, 1180, 14, 0.45], [1022, 1420, 17, 0.4],
+  [524, 1866, 22, 0.5], [180, 1872, 13, 0.4], [880, 1858, 15, 0.45],
+]
+for (const [x, y, s, o] of HEARTS) layers.push({ input: heart(s, o), left: x, top: y })
 
-execFileSync(
-  ffmpegPath,
-  ['-y', '-hide_banner', '-loglevel', 'error', '-i', TMP, '-vf', text, '-q:v', '2', OUT],
-  { stdio: 'inherit' },
+// Kertas pink lembut
+const paper = svg(
+  `<svg width="${W}" height="${H}"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">` +
+    `<stop offset="0%" stop-color="#fff4f8"/><stop offset="48%" stop-color="#ffe8f1"/>` +
+    `<stop offset="100%" stop-color="#fff1f6"/></linearGradient></defs>` +
+    `<rect width="${W}" height="${H}" fill="url(#g)"/></svg>`,
 )
 
-rmSync(TMP, { force: true })
+await sharp(paper).composite(layers).jpeg({ quality: 92 }).toFile(OUT)
 
-// Versi kecil untuk dikirim lewat WhatsApp / diunggah ke Instagram
-const SHARE = `${OUT_DIR}/kolase-suci-share.jpg`
-await sharp(OUT).resize({ width: 1440 }).jpeg({ quality: 88 }).toFile(SHARE)
-
-const mb = (f) => (statSync(f).size / 1048576).toFixed(1)
-console.log(`\nSelesai:`)
-console.log(`  ${OUT} — ${W}x${H}, ${mb(OUT)}MB (cetak / kualitas penuh)`)
-console.log(`  ${SHARE} — 1440px, ${mb(SHARE)}MB (untuk dibagikan)`)
+console.log(`\nSelesai: ${OUT} — ${W}x${H}, ${(statSync(OUT).size / 1048576).toFixed(1)}MB`)
