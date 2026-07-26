@@ -12,15 +12,23 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-const TARGET = Number(process.argv[2]) || 300 // detik (default 5 menit, pas untuk voice-over)
-const W = 1280
-const H = 720
-const BAR = 62 // tinggi bilah hitam atas & bawah -> area gambar 1280x596 (~2.15:1)
+// --master : versi 1080p kualitas tinggi untuk diedit (CapCut dll).
+//            Disimpan di media-src/export/ supaya TIDAK ikut ter-upload.
+const MASTER = process.argv.includes('--master')
+const SCALE = MASTER ? 1.5 : 1
+
+const TARGET = Number(process.argv.find((a) => /^\d+$/.test(a))) || 300 // detik
+const W = 1280 * SCALE
+const H = 720 * SCALE
+const BAR = 62 * SCALE // bilah hitam atas & bawah -> area gambar ~2.15:1
 const FPS = 25
 const FADE = 0.34
 const VID_CLIP = 2.2
+const CRF = MASTER ? '19' : '23'
 const AUDIO = 'public/audio/cahaya.mp3'
-const OUT = 'public/video/memories-2026.mp4'
+const OUT = MASTER
+  ? 'media-src/export/memories-2026-master-1080p.mp4'
+  : 'public/video/memories-2026.mp4'
 const TMP = 'scripts/.videotmp'
 
 // ffmpeg di Windows perlu escape khusus untuk path font
@@ -113,6 +121,7 @@ while (vi < videos.length) {
 // ---- render -----------------------------------------------------------
 rmSync(TMP, { recursive: true, force: true })
 mkdirSync(TMP, { recursive: true })
+if (MASTER) mkdirSync('media-src/export', { recursive: true })
 
 const clips = []
 let total = 0
@@ -124,8 +133,8 @@ function card(file, dur, lines) {
       const st = 0.7 + i * 0.55
       return (
         `drawtext=fontfile='${l.italic ? FONT_I : FONT}':text='${l.text}':` +
-        `fontcolor=white@${l.dim ? 0.62 : 0.95}:fontsize=${l.size}:` +
-        `x=(w-text_w)/2:y=${l.y}:` +
+        `fontcolor=white@${l.dim ? 0.62 : 0.95}:fontsize=${Math.round(l.size * SCALE)}:` +
+        `x=(w-text_w)/2:y=${Math.round(l.y * SCALE)}:` +
         `alpha='if(lt(t,${st}),0,if(lt(t,${st + 1.1}),(t-${st})/1.1,` +
         `if(lt(t,${dur - 1.2}),1,max(0,(${dur}-t)/1.2))))'`
       )
@@ -162,7 +171,7 @@ seq.forEach((item, idx) => {
       const vf =
         `${frame},${look},` +
         `fade=t=in:st=0:d=${FADE},fade=t=out:st=${(photoDur - FADE).toFixed(2)}:d=${FADE},${tail}`
-      run(['-loop', '1', '-framerate', String(FPS), '-t', photoDur.toFixed(2), '-i', item.src, '-filter_complex', vf, '-c:v', 'libx264', '-crf', '23', '-preset', 'veryfast', '-an', '-r', String(FPS), out])
+      run(['-loop', '1', '-framerate', String(FPS), '-t', photoDur.toFixed(2), '-i', item.src, '-filter_complex', vf, '-c:v', 'libx264', '-crf', CRF, '-preset', 'veryfast', '-an', '-r', String(FPS), out])
       total += photoDur
     } else {
       const full = duration(item.src)
@@ -170,7 +179,7 @@ seq.forEach((item, idx) => {
       const vf =
         `${frame},fps=${FPS},${look},` +
         `fade=t=in:st=0:d=${FADE},fade=t=out:st=${(item.dur - FADE).toFixed(2)}:d=${FADE},${tail}`
-      run(['-ss', String(start.toFixed(2)), '-i', item.src, '-t', String(item.dur.toFixed(2)), '-filter_complex', vf, '-c:v', 'libx264', '-crf', '23', '-preset', 'veryfast', '-an', '-r', String(FPS), out])
+      run(['-ss', String(start.toFixed(2)), '-i', item.src, '-t', String(item.dur.toFixed(2)), '-filter_complex', vf, '-c:v', 'libx264', '-crf', CRF, '-preset', 'veryfast', '-an', '-r', String(FPS), out])
       total += item.dur
     }
     clips.push(out)
@@ -207,7 +216,10 @@ run([
   OUT,
 ])
 
-run(['-ss', '9', '-i', OUT, '-frames:v', '1', '-q:v', '3', 'public/img/memories-poster.jpg'])
+// Poster hanya untuk versi web
+if (!MASTER) {
+  run(['-ss', '9', '-i', OUT, '-frames:v', '1', '-q:v', '3', 'public/img/memories-poster.jpg'])
+}
 
 rmSync(TMP, { recursive: true, force: true })
 console.log(

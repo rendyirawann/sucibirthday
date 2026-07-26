@@ -52,9 +52,14 @@ script ini — folder addon murni tambahan.
 Video di bagian akhir dibuat otomatis dari **seluruh** foto & video (lama + addon):
 
 ```bash
-node scripts/make-memory-video.mjs        # default 5 menit
-node scripts/make-memory-video.mjs 180    # atau tentukan durasinya (detik)
+node scripts/make-memory-video.mjs           # versi web: 720p, ringan
+node scripts/make-memory-video.mjs 180       # tentukan durasinya (detik)
+node scripts/make-memory-video.mjs --master  # 1080p kualitas tinggi untuk diedit
 ```
+
+Versi `--master` disimpan di `media-src/export/memories-2026-master-1080p.mp4`
+(tidak ikut ter-upload). Pakai file itu kalau mau diedit di CapCut, lalu
+timpa `public/video/memories-2026.mp4` dengan hasil ekspornya.
 
 Durasi tiap foto dihitung otomatis supaya totalnya pas target.
 
