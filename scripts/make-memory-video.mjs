@@ -9,7 +9,7 @@
 // Durasi target bisa diubah: node scripts/make-memory-video.mjs 300
 import ffmpegPath from 'ffmpeg-static'
 import { execFileSync } from 'node:child_process'
-import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 // --master : versi 1080p kualitas tinggi untuk diedit (CapCut dll).
@@ -26,8 +26,9 @@ const FADE = 0.34
 const VID_CLIP = 2.2
 const CRF = MASTER ? '19' : '23'
 const AUDIO = 'public/audio/cahaya.mp3'
+const OUT_DIR_MASTER = 'media-src/export'
 const OUT = MASTER
-  ? 'media-src/export/memories-2026-master-1080p.mp4'
+  ? `${OUT_DIR_MASTER}/_master-render.mp4` // diberi nama akhir setelah durasi diketahui
   : 'public/video/memories-2026.mp4'
 const TMP = 'scripts/.videotmp'
 
@@ -222,7 +223,19 @@ if (!MASTER) {
 }
 
 rmSync(TMP, { recursive: true, force: true })
+
+// Nama file master menyertakan durasinya. Tanpa ini, master lama dan baru
+// bernama sama — CapCut/galeri HP menyimpan cache media yang sudah diimpor,
+// jadi versi lama bisa terus terpakai walau filenya sudah ditimpa.
+let final = OUT
+if (MASTER) {
+  const mm = Math.floor(total / 60)
+  const ss = String(Math.round(total % 60)).padStart(2, '0')
+  final = `${OUT_DIR_MASTER}/A-Little-Film-${mm}m${ss}s.mp4`
+  renameSync(OUT, final)
+}
+
 console.log(
-  `\nSelesai: ${OUT} — ${Math.floor(total / 60)}m ${Math.round(total % 60)}s, ` +
-    `${(statSync(OUT).size / 1048576).toFixed(1)}MB, ${clips.length} klip`,
+  `\nSelesai: ${final} — ${Math.floor(total / 60)}m ${Math.round(total % 60)}s, ` +
+    `${(statSync(final).size / 1048576).toFixed(1)}MB, ${clips.length} klip`,
 )
