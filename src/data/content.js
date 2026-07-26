@@ -1,9 +1,16 @@
 // ===============================================================
 //  SEMUA KONTEN SITUS ADA DI FILE INI — edit di sini saja.
-//  Menambah foto : taruh file di public/img/... lalu daftarkan
-//  Menambah video: taruh file di public/video/... lalu daftarkan
-//  Setelah menambah media, jalankan: node scripts/compress-assets.mjs
+//
+//  Menambah foto/video baru dalam jumlah banyak:
+//    1. taruh file mentahnya di media-src/addon/
+//    2. jalankan: node scripts/import-addon.mjs
+//    3. jalankan: node scripts/make-memory-video.mjs  (montase A Little Film)
+//
+//  Menambah satu-dua file secara manual: taruh di public/img atau
+//  public/video, lalu daftarkan di array di bawah.
 // ===============================================================
+
+import { addonPhotos, addonVideos } from './addon-media'
 
 export const eventInfo = {
   day: 'Monday',
@@ -27,15 +34,32 @@ export const letter = {
   closing: 'with love, always',
 }
 
-// Foto-foto memory lane. Tambahkan { src, caption } baru di sini.
-// caption boleh dikosongkan ('').
-export const photos = Array.from({ length: 25 }, (_, i) => ({
-  src: `img/gallery/${i + 1}.jpg`,
-  caption: '',
-}))
+// 25 foto asli + semua foto dari media-src/addon
+export const photos = [
+  ...Array.from({ length: 25 }, (_, i) => `img/gallery/${i + 1}.jpg`),
+  ...addonPhotos,
+].map((src) => ({ src, caption: '' }))
 
-// Memory bubbles melayang di seluruh halaman — isinya otomatis
-// diambil bergantian dari semua foto galeri + video di atas.
+// 6 video asli + semua video dari media-src/addon
+export const videos = [
+  ...Array.from({ length: 6 }, (_, i) => `video/${i + 1}.mp4`),
+  ...addonVideos,
+]
+
+// Isi Memory Lane: semua foto, dengan video disisipkan berkala
+// supaya grid-nya hidup (tidak menumpuk di satu tempat).
+export const laneItems = (() => {
+  const items = photos.map((p) => ({ type: 'image', src: p.src, caption: p.caption }))
+  const gap = Math.max(4, Math.floor(items.length / (videos.length + 1)))
+  videos.forEach((src, i) => {
+    const at = Math.min(items.length, gap * (i + 1) + i)
+    items.splice(at, 0, { type: 'video', src, caption: '' })
+  })
+  return items
+})()
+
+// Memory bubbles melayang di seluruh halaman — isinya diambil
+// bergantian dari seluruh foto + video di atas.
 
 // Kubus memory 3D (6 sisi video)
 export const cubeVideos = [

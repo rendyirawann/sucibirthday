@@ -2,3 +2,7 @@ node_modules
 dist
 .DS_Store
 *.local
+
+# Foto/video mentah dari HP — sumber untuk scripts/import-addon.mjs.
+# Terlalu besar untuk repo; simpan cadangannya sendiri ya.
+media-src/

@@ -34,13 +34,29 @@ gh api -X PUT repos/rendyirawann/sucibirthday/pages -f build_type=legacy -f "sou
 > `gh auth refresh -s workflow`, commit file tersebut, lalu set sumber Pages
 > ke "GitHub Actions".
 
+## Menambah foto & video baru (banyak sekaligus)
+
+1. Taruh file mentah dari HP di **`media-src/addon/`** (folder ini tidak ikut
+   ter-upload ke GitHub karena terlalu besar — simpan cadangannya sendiri).
+2. `node scripts/import-addon.mjs` — menghasilkan versi web ringan:
+   foto 1080px ke `public/img/gallery/addon/`, potongan video 4 detik ke
+   `public/video/addon/`, dan memperbarui `src/data/addon-media.js`.
+3. `node scripts/make-memory-video.mjs` — membangun ulang montasenya.
+4. `npm run deploy`
+
+Aset lama (`img/gallery/1-25.jpg`, `video/1-6.mp4`) tidak pernah disentuh
+script ini — folder addon murni tambahan.
+
 ## Video montase ("A Little Film")
 
-Video 90 detik di bagian akhir dibuat otomatis dari semua foto galeri + video:
+Video di bagian akhir dibuat otomatis dari **seluruh** foto & video (lama + addon):
 
 ```bash
-node scripts/make-memory-video.mjs
+node scripts/make-memory-video.mjs        # default 5 menit
+node scripts/make-memory-video.mjs 180    # atau tentukan durasinya (detik)
 ```
+
+Durasi tiap foto dihitung otomatis supaya totalnya pas target.
 
 Untuk memakai video buatanmu sendiri: cukup timpa `public/video/memories-2026.mp4`
 (dan `public/img/memories-poster.jpg` untuk gambar sampulnya).

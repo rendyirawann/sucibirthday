@@ -3,12 +3,12 @@
 // Naik pelan seperti gelembung sabun; isinya berganti-ganti foto/video.
 import { nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 import gsap from 'gsap'
-import { cubeVideos, photos } from '../data/content'
+import { photos, videos } from '../data/content'
 import { asset } from '../lib/assets'
 
 const pool = [
   ...photos.map((p) => ({ type: 'image', src: p.src })),
-  ...cubeVideos.map((v) => ({ type: 'video', src: v.src })),
+  ...videos.map((src) => ({ type: 'video', src })),
 ]
 
 // Maksimal 2 bubble menampilkan video bersamaan (hemat tenaga ponsel)
@@ -19,17 +19,48 @@ const bubbles = reactive([])
 let ctx
 let alive = true
 
-function randomMedia(exceptSrc) {
-  const videoCount = bubbles.filter((b) => b.media.type === 'video').length
-  let candidates = pool.filter((m) => m.src !== exceptSrc)
-  if (videoCount >= MAX_VIDEO_BUBBLES) candidates = candidates.filter((m) => m.type === 'image')
-  return candidates[Math.floor(Math.random() * candidates.length)]
+// "Tumpukan kartu yang dikocok": seluruh foto & video diacak jadi satu
+// tumpukan, diambil satu per satu, baru dikocok ulang setelah habis.
+// Dengan begini setiap aset pasti kebagian tampil sebelum ada yang terulang.
+let deck = []
+
+function shuffle(arr) {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+function drawMedia() {
+  const shown = new Set(bubbles.map((b) => b.media?.src))
+  const videoCount = bubbles.filter((b) => b.media?.type === 'video').length
+  const skipped = []
+  let picked = null
+
+  // Ambil kartu teratas yang layak; yang dilewati dikembalikan ke tumpukan
+  // supaya tetap mendapat giliran nanti.
+  for (let guard = 0; guard < pool.length + 1; guard++) {
+    if (!deck.length) deck = shuffle(pool)
+    const card = deck.shift()
+    const tooManyVideos = card.type === 'video' && videoCount >= MAX_VIDEO_BUBBLES
+    if (shown.has(card.src) || tooManyVideos) {
+      skipped.push(card)
+      continue
+    }
+    picked = card
+    break
+  }
+
+  deck.push(...skipped)
+  return picked || pool[Math.floor(Math.random() * pool.length)]
 }
 
 function scheduleSwap(bubble) {
-  gsap.delayedCall(gsap.utils.random(7, 15), () => {
+  gsap.delayedCall(gsap.utils.random(5, 11), () => {
     if (!alive) return
-    bubble.media = randomMedia(bubble.media.src)
+    bubble.media = drawMedia()
     scheduleSwap(bubble)
   })
 }
@@ -41,7 +72,7 @@ onMounted(async () => {
     bubbles.push({
       id: i,
       size: Math.round(gsap.utils.random(mobile ? 54 : 72, mobile ? 112 : 150)),
-      media: randomMedia(),
+      media: drawMedia(),
     })
   }
   await nextTick()

@@ -29,7 +29,7 @@ onUnmounted(() => ctx?.revert())
     <p class="closing-stagger mt-5 max-w-md text-inksoft md:text-lg">{{ closing.note }}</p>
     <p class="closing-stagger eyebrow mt-8">{{ eventInfo.day }} · {{ eventInfo.dateLong }}</p>
     <p class="closing-stagger mt-14 text-xs tracking-[0.25em] text-inksoft/70 uppercase">
-      made with 🤍 · 2026
+      made with 🤍 by abang rendy ganteng · 2026
     </p>
   </section>
 </template>
