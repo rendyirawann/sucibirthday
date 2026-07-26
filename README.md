@@ -66,6 +66,20 @@ Durasi tiap foto dihitung otomatis supaya totalnya pas target.
 Untuk memakai video buatanmu sendiri: cukup timpa `public/video/memories-2026.mp4`
 (dan `public/img/memories-poster.jpg` untuk gambar sampulnya).
 
+## Kolase foto hitam-putih
+
+```bash
+node scripts/make-collage.mjs
+```
+
+Menghasilkan papan kenangan 7x7 (49 foto pilihan) di `media-src/export/`:
+`kolase-suci.jpg` (2892x3887, untuk dicetak) dan `kolase-suci-share.jpg`
+(1440px, untuk dikirim/diunggah).
+
+Daftar fotonya ada di konstanta `SELECTED` — angkanya adalah urutan foto
+(0–24 = galeri lama, 25+ = hasil impor addon). Foto landscape otomatis
+ditampilkan utuh di atas kertas supaya tidak ada wajah yang terpotong.
+
 ## Kompresi aset
 
 Kalau menambah foto galeri / gambar / video baru, jalankan:
