@@ -66,15 +66,18 @@ Durasi tiap foto dihitung otomatis supaya totalnya pas target.
 Untuk memakai video buatanmu sendiri: cukup timpa `public/video/memories-2026.mp4`
 (dan `public/img/memories-poster.jpg` untuk gambar sampulnya).
 
-## Kolase foto untuk Instagram Story
+## Kolase foto polaroid
 
 ```bash
-node scripts/make-collage.mjs
+node scripts/make-collage.mjs          # IG Story 1080x1920, 35 foto
+node scripts/make-collage.mjs --print  # A3 300 DPI 3508x4961, 42 foto
 ```
 
-Menghasilkan `media-src/export/kolase-suci-story.jpg` — 1080x1920 (pas
-layar penuh IG Story): 35 foto hitam-putih hangat dalam bingkai polaroid
-putih yang dimiringkan acak, bayangan pink lembut, di atas kertas pink.
+Foto hitam-putih hangat dalam bingkai polaroid putih yang dimiringkan
+acak, bayangan pink lembut, di atas kertas pink. Tanpa teks. Hasilnya di
+`media-src/export/`. Versi cetak memakai kualitas JPEG 95 tanpa chroma
+subsampling dan menyimpan metadata 300 DPI supaya percetakan langsung
+membacanya sebagai A3 (29,7 x 42 cm).
 
 Daftar fotonya ada di konstanta `SELECTED` — angkanya adalah urutan foto
 (0–24 = galeri lama, 25+ = hasil impor addon). Foto landscape otomatis
