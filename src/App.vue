@@ -11,6 +11,7 @@ import LetterSection from './components/LetterSection.vue'
 import PolaroidGallery from './components/PolaroidGallery.vue'
 import CubeSection from './components/CubeSection.vue'
 import PlaylistSection from './components/PlaylistSection.vue'
+import BoardSection from './components/BoardSection.vue'
 import VideoFinale from './components/VideoFinale.vue'
 import ClosingSection from './components/ClosingSection.vue'
 import MiniPlayer from './components/MiniPlayer.vue'
@@ -57,6 +58,7 @@ function onOpen() {
     <PolaroidGallery />
     <CubeSection />
     <PlaylistSection />
+    <BoardSection />
     <VideoFinale />
     <ClosingSection />
   </main>

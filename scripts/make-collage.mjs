@@ -161,25 +161,43 @@ for (let i = 0; i < SELECTED.length; i++) {
   if ((i + 1) % 12 === 0) console.log(`  ${i + 1}/${SELECTED.length}`)
 }
 
-// Hati kecil merah muda yang berserak di tepi
-const heart = (size, op) =>
+// Hati merah muda & putih yang berserak — sebagian menempel di tepi kartu
+// seperti stiker. Yang putih diberi garis pink tipis supaya tetap terbaca
+// di atas kertas pink, dan bayangan halus supaya tidak terlihat "menempel rata".
+const heart = (size, fill, stroke, op, rot) =>
   svg(
     `<svg width="${size}" height="${size}" viewBox="0 0 24 24">` +
-      `<path fill="#f2a9c4" opacity="${op}" d="M12 21s-6.7-4.3-9.3-8.1C.6 9.7 2 5.6 5.6 4.7c2.1-.5 4.2.4 5.4 2.1h2c1.2-1.7 3.3-2.6 5.4-2.1 3.6.9 5 5 2.9 8.2C18.7 16.7 12 21 12 21z"/></svg>`,
+      `<g transform="rotate(${rot} 12 12)" opacity="${op}">` +
+      `<path fill="${fill}" stroke="${stroke}" stroke-width="${stroke === 'none' ? 0 : 1}" ` +
+      `d="M12 21s-6.7-4.3-9.3-8.1C.6 9.7 2 5.6 5.6 4.7c2.1-.5 4.2.4 5.4 2.1h2c1.2-1.7 3.3-2.6 5.4-2.1 3.6.9 5 5 2.9 8.2C18.7 16.7 12 21 12 21z"/>` +
+      `</g></svg>`,
   )
-// posisi relatif (0-1) supaya ikut menyesuaikan ukuran kanvas
+
+const PINK = '#f4a3c0'
+const WHITE = '#ffffff'
+// [x, y, ukuran, warna, opasitas, putaran] — posisi relatif (0-1)
 const HEARTS = [
-  [0.04, 0.014, 20, 0.5], [0.94, 0.062, 14, 0.45], [0.02, 0.333, 16, 0.4],
-  [0.96, 0.406, 20, 0.5], [0.03, 0.615, 14, 0.45], [0.95, 0.74, 17, 0.4],
-  [0.485, 0.972, 22, 0.5], [0.167, 0.975, 13, 0.4], [0.815, 0.967, 15, 0.45],
+  [0.035, 0.012, 30, PINK, 0.85, -12], [0.945, 0.055, 22, WHITE, 0.95, 14],
+  [0.30, 0.145, 20, WHITE, 0.9, -8], [0.665, 0.128, 17, PINK, 0.8, 10],
+  [0.018, 0.30, 25, WHITE, 0.95, 6], [0.955, 0.275, 19, PINK, 0.85, -14],
+  [0.50, 0.415, 22, PINK, 0.8, 8], [0.145, 0.44, 16, WHITE, 0.9, -10],
+  [0.958, 0.545, 27, WHITE, 0.95, 12], [0.025, 0.60, 20, PINK, 0.85, -6],
+  [0.80, 0.685, 18, WHITE, 0.9, 16], [0.36, 0.72, 17, PINK, 0.8, -12],
+  [0.95, 0.84, 24, PINK, 0.85, 9], [0.03, 0.875, 22, WHITE, 0.95, -8],
+  [0.485, 0.968, 32, PINK, 0.9, 5], [0.175, 0.972, 20, WHITE, 0.95, -14],
+  [0.80, 0.965, 23, WHITE, 0.9, 11], [0.63, 0.978, 15, PINK, 0.8, -5],
 ]
-for (const [fx, fy, s, o] of HEARTS) {
-  const size = Math.max(10, Math.round(s * SCALE))
+for (const [fx, fy, s, fill, o, rot] of HEARTS) {
+  const size = Math.max(12, Math.round(s * SCALE))
+  const left = Math.max(0, Math.min(W - size, Math.round(fx * W)))
+  const top = Math.max(0, Math.min(H - size, Math.round(fy * H)))
+  const stroke = fill === WHITE ? '#f0b9cd' : 'none'
   layers.push({
-    input: heart(size, o),
-    left: Math.min(W - size, Math.round(fx * W)),
-    top: Math.min(H - size, Math.round(fy * H)),
+    input: await sharp(heart(size, '#d98fae', 'none', 0.3, rot)).blur(Math.max(1, size * 0.06)).png().toBuffer(),
+    left,
+    top: top + Math.max(1, Math.round(size * 0.06)),
   })
+  layers.push({ input: heart(size, fill, stroke, o, rot), left, top })
 }
 
 // Kertas pink lembut
@@ -200,3 +218,10 @@ console.log(
   `\nSelesai: ${OUT} — ${W}x${H}, ${(statSync(OUT).size / 1048576).toFixed(1)}MB` +
     (PRINT ? ' (A3, 29.7 x 42 cm @ 300 DPI)' : ''),
 )
+
+// Versi story sekaligus dipakai di situs (section "The Board")
+if (!PRINT) {
+  const WEB = 'public/img/kolase-suci.jpg'
+  await sharp(OUT).jpeg({ quality: 84 }).toFile(WEB)
+  console.log(`         ${WEB} — untuk situs, ${(statSync(WEB).size / 1048576).toFixed(1)}MB`)
+}

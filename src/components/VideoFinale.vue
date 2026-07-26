@@ -57,7 +57,7 @@ onUnmounted(() => ctx?.revert())
     <div class="relative px-6 md:px-12 lg:px-16">
       <div class="finale-stagger mb-3 flex items-center gap-3">
         <span class="h-px w-10 bg-petal/50"></span>
-        <p class="eyebrow text-petal/90">05 — now showing</p>
+        <p class="eyebrow text-petal/90">06 — now showing</p>
       </div>
       <h2 class="finale-stagger script-title text-6xl text-blush md:text-7xl">
         {{ finale.title }}
@@ -103,7 +103,7 @@ onUnmounted(() => ctx?.revert())
         <div
           class="finale-stagger mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[0.68rem] tracking-[0.28em] text-petal/55 uppercase"
         >
-          <span>5 min</span>
+          <span>7 min 25 s</span>
           <span class="h-1 w-1 rounded-full bg-petal/40"></span>
           <span>{{ memoryCount }} memories</span>
           <span class="h-1 w-1 rounded-full bg-petal/40"></span>

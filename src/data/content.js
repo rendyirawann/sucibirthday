@@ -88,12 +88,19 @@ export const playlist = [
 // Lagu pertama yang diputar saat halaman dibuka: Cahaya - TULUS
 export const initialTrackIndex = 9
 
+// Papan kolase. Dibuat oleh: node scripts/make-collage.mjs
+export const board = {
+  title: 'The Board',
+  sub: 'papan kenangan kita — ketuk untuk lihat lebih besar 🤍',
+  src: 'img/kolase-suci.jpg',
+}
+
 // Video montase di bagian akhir. Untuk menggantinya dengan video buatanmu:
 // timpa file public/video/memories-2026.mp4 (dan poster-nya bila mau).
 // Untuk membuat ulang montase otomatis: node scripts/make-memory-video.mjs
 export const finale = {
   title: 'A Little Film',
-  sub: 'lima menit tentang kita — matikan lampu, tekan play 🤍',
+  sub: 'tujuh menit tentang kita — matikan lampu, tekan play 🤍',
   src: 'video/memories-2026.mp4',
   poster: 'img/memories-poster.jpg',
 }
