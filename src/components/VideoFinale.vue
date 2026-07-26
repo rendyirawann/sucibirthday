@@ -107,6 +107,8 @@ onUnmounted(() => ctx?.revert())
           <span class="h-1 w-1 rounded-full bg-petal/40"></span>
           <span>{{ memoryCount }} memories</span>
           <span class="h-1 w-1 rounded-full bg-petal/40"></span>
+          <span>narrated by abang</span>
+          <span class="h-1 w-1 rounded-full bg-petal/40"></span>
           <span>music · cahaya</span>
           <span class="h-1 w-1 rounded-full bg-petal/40"></span>
           <span>2025 – 2026</span>

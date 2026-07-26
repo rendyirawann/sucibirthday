@@ -100,7 +100,7 @@ export const board = {
 // Untuk membuat ulang montase otomatis: node scripts/make-memory-video.mjs
 export const finale = {
   title: 'A Little Film',
-  sub: 'tujuh menit tentang kita — matikan lampu, tekan play 🤍',
+  sub: 'tujuh menit tentang kita — pakai headset, matikan lampu, tekan play 🤍',
   src: 'video/memories-2026.mp4',
   poster: 'img/memories-poster.jpg',
 }

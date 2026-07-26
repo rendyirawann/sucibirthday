@@ -57,9 +57,23 @@ node scripts/make-memory-video.mjs 180       # tentukan durasinya (detik)
 node scripts/make-memory-video.mjs --master  # 1080p kualitas tinggi untuk diedit
 ```
 
-Versi `--master` disimpan di `media-src/export/memories-2026-master-1080p.mp4`
-(tidak ikut ter-upload). Pakai file itu kalau mau diedit di CapCut, lalu
-timpa `public/video/memories-2026.mp4` dengan hasil ekspornya.
+Versi `--master` disimpan sebagai `media-src/export/A-Little-Film-<durasi>.mp4`
+(tidak ikut ter-upload). Namanya memuat durasi supaya master lama & baru tidak
+pernah bertabrakan — CapCut menyimpan cache media yang sudah diimpor, jadi file
+bernama sama yang ditimpa akan tetap terbaca dengan durasi lamanya.
+
+**Setelah diedit di CapCut**, ekspor 1080p lalu kompres ke versi web:
+
+```bash
+node_modules/ffmpeg-static/ffmpeg.exe -i media-src/export/littlefilm.mp4 \
+  -vf scale=1280:-2 -c:v libx264 -crf 22 -preset medium -pix_fmt yuv420p \
+  -c:a aac -b:a 128k -movflags +faststart public/video/memories-2026.mp4
+```
+
+Ekspor CapCut biasanya ratusan MB; versi web harus di bawah ~40 MB supaya
+situsnya tetap ringan. Jangan lupa perbarui juga posternya
+(`public/img/memories-poster.jpg`) dan durasi di `src/data/content.js`
+serta strip kredit di `src/components/VideoFinale.vue`.
 
 Durasi tiap foto dihitung otomatis supaya totalnya pas target.
 
