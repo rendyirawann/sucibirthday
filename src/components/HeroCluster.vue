@@ -1,21 +1,24 @@
 <script setup>
-// Tiga kartu foto miring di hero. Diklik -> membalik (flip) dan berganti
-// ke foto/video lain. Juga berganti sendiri pelan-pelan supaya terasa hidup.
+// Tumpukan tiga kartu foto di hero. Diklik -> kartunya terlempar keluar
+// sambil berputar (seperti membuang kartu), lalu kartu baru jatuh
+// menggantikannya dengan foto/video lain. Juga berganti sendiri pelan-pelan.
 import { nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 import gsap from 'gsap'
 import { asset } from '../lib/assets'
 import { drawMedia } from '../composables/useMediaDeck'
 import { useLightbox } from '../composables/useLightbox'
 
+// Posisi dibuat agak renggang supaya ketiga kartu tetap kelihatan;
+// sudut miringnya diatur GSAP (bukan class) agar tidak bentrok saat animasi.
 const LAYOUT = [
-  'top-0 left-2 w-[54%] -rotate-6 z-10',
-  'top-[26%] right-0 w-[48%] rotate-4 z-20',
-  'bottom-0 left-[16%] w-[50%] -rotate-2 z-10',
+  { pos: 'top-0 left-0 w-[45%]', rot: -8, z: 10 },
+  { pos: 'top-[7%] right-0 w-[45%]', rot: 5, z: 20 },
+  { pos: 'bottom-0 left-[27%] w-[47%]', rot: -2, z: 30 },
 ]
 
 const root = ref(null)
 const cards = reactive([])
-const flipping = new Set()
+const busy = new Set()
 let ctx
 let alive = true
 
@@ -26,18 +29,47 @@ function pick() {
   return drawMedia((card) => !shown.has(card.src) && !(hasVideo && card.type === 'video'))
 }
 
-function flip(i) {
-  if (flipping.has(i) || !alive) return
-  flipping.add(i)
+function toss(i) {
+  if (busy.has(i) || !alive) return
+  busy.add(i)
+
   const el = root.value.children[i]
+  const base = LAYOUT[i].rot
+  const dir = i === 1 ? 1 : -1 // dilempar ke kanan/kiri sesuai posisinya
+
   gsap
-    .timeline({ onComplete: () => flipping.delete(i) })
-    .to(el, { rotationY: 90, scale: 0.94, duration: 0.34, ease: 'power2.in' })
+    .timeline({
+      onComplete: () => {
+        gsap.set(el, { zIndex: LAYOUT[i].z })
+        busy.delete(i)
+      },
+    })
+    // kartu lama terlempar keluar sambil berputar
+    .set(el, { zIndex: 60 })
+    .to(el, {
+      x: dir * 190,
+      y: -120,
+      rotation: base + dir * 34,
+      rotationY: dir * 75,
+      scale: 0.82,
+      autoAlpha: 0,
+      duration: 0.5,
+      ease: 'power2.in',
+    })
     .call(() => (cards[i].media = pick()))
+    // kartu baru jatuh dari bawah tumpukan
     .fromTo(
       el,
-      { rotationY: -90 },
-      { rotationY: 0, scale: 1, duration: 0.42, ease: 'power2.out' },
+      { x: 0, y: 70, rotation: base - dir * 12, rotationY: -dir * 45, scale: 0.88, autoAlpha: 0 },
+      {
+        y: 0,
+        rotation: base,
+        rotationY: 0,
+        scale: 1,
+        autoAlpha: 1,
+        duration: 0.62,
+        ease: 'back.out(1.5)',
+      },
     )
 }
 
@@ -46,12 +78,17 @@ onMounted(async () => {
   await nextTick()
 
   ctx = gsap.context(() => {
-    // giliran otomatis: satu kartu berganti tiap beberapa detik
+    // sudut miring awal tiap kartu
+    Array.from(root.value.children).forEach((el, i) =>
+      gsap.set(el, { rotation: LAYOUT[i].rot, zIndex: LAYOUT[i].z }),
+    )
+
+    // giliran otomatis
     let turn = 0
     function cycle() {
       if (!alive) return
       gsap.delayedCall(gsap.utils.random(3.5, 6), () => {
-        flip(turn % 3)
+        toss(turn % 3)
         turn++
         cycle()
       })
@@ -69,13 +106,13 @@ const { show } = useLightbox()
 </script>
 
 <template>
-  <div ref="root" class="relative h-[300px] [perspective:1400px] md:h-[440px]">
+  <div ref="root" class="relative h-[320px] [perspective:1400px] md:h-[440px]">
     <div
       v-for="(card, i) in cards"
       :key="i"
       class="absolute cursor-pointer [transform-style:preserve-3d]"
-      :class="LAYOUT[i]"
-      @click="flip(i)"
+      :class="LAYOUT[i].pos"
+      @click="toss(i)"
       @dblclick="show(card.media.type, asset(card.media.src))"
     >
       <div
@@ -97,12 +134,12 @@ const { show } = useLightbox()
           class="h-full w-full object-cover"
         ></video>
       </div>
-      <!-- petunjuk kecil hanya di kartu tengah -->
+      <!-- petunjuk kecil di bawah kartu paling depan -->
       <span
-        v-if="i === 1"
-        class="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 text-[0.6rem] tracking-[0.25em] whitespace-nowrap text-inksoft/70 uppercase"
+        v-if="i === 2"
+        class="pointer-events-none absolute -bottom-6 left-1/2 -translate-x-1/2 text-[0.6rem] tracking-[0.25em] whitespace-nowrap text-inksoft/70 uppercase"
       >
-        tap to flip
+        tap to change
       </span>
     </div>
   </div>

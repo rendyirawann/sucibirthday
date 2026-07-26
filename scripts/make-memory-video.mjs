@@ -84,13 +84,17 @@ const videos = [
 ].filter(existsSync)
 
 const CARD_IN = 5.5
+const CARD_MID = 5
 const CARD_OUT = 6.5
 
 console.log(`Sumber: ${photos.length} foto, ${videos.length} video — target ${TARGET}s`)
 
 const vidDurs = videos.map((v) => Math.min(VID_CLIP, Math.max(0.8, duration(v))))
 const vidTotal = vidDurs.reduce((a, b) => a + b, 0)
-const photoDur = Math.max(0.9, (TARGET - vidTotal - CARD_IN - CARD_OUT) / photos.length)
+const photoDur = Math.max(
+  0.9,
+  (TARGET - vidTotal - CARD_IN - CARD_MID - CARD_OUT) / photos.length,
+)
 const photoFrames = Math.round(photoDur * FPS)
 console.log(`Foto ${photoDur.toFixed(2)}s masing-masing, video ${vidTotal.toFixed(1)}s total`)
 
@@ -109,6 +113,16 @@ while (vi < videos.length) {
   seq.push({ t: 'v', src: videos[vi], dur: vidDurs[vi] })
   vi++
 }
+
+// Kartu antar-babak di tengah film
+seq.splice(Math.floor(seq.length / 2), 0, {
+  t: 'card',
+  dur: CARD_MID,
+  lines: [
+    { text: 'a year and a half later,', size: 40, y: 290, italic: true },
+    { text: 'almost two on our journey !!', size: 40, y: 356, italic: true },
+  ],
+})
 
 // ---- render -----------------------------------------------------------
 rmSync(TMP, { recursive: true, force: true })
@@ -150,13 +164,16 @@ total += CARD_IN
 seq.forEach((item, idx) => {
   const out = join(TMP, `clip_${String(idx + 1).padStart(4, '0')}.mp4`)
   try {
-    if (item.t === 'p') {
+    if (item.t === 'card') {
+      card(out, item.dur, item.lines)
+      total += item.dur
+    } else if (item.t === 'p') {
+      // Tanpa zoompan: filter itu menggeser gambar per piksel bulat sehingga
+      // fotonya terlihat bergetar. Foto ditahan diam, transisinya saja yang halus.
       const vf =
-        `${frame},scale=1920:1080,` +
-        `zoompan=z='1+0.06*on/${photoFrames}':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)/2':` +
-        `d=${photoFrames}:s=${W}x${H}:fps=${FPS},${look},` +
+        `${frame},${look},` +
         `fade=t=in:st=0:d=${FADE},fade=t=out:st=${(photoDur - FADE).toFixed(2)}:d=${FADE},${tail}`
-      run(['-i', item.src, '-filter_complex', vf, '-c:v', 'libx264', '-crf', '23', '-preset', 'veryfast', '-an', '-r', String(FPS), out])
+      run(['-loop', '1', '-framerate', String(FPS), '-t', photoDur.toFixed(2), '-i', item.src, '-filter_complex', vf, '-c:v', 'libx264', '-crf', '23', '-preset', 'veryfast', '-an', '-r', String(FPS), out])
       total += photoDur
     } else {
       const full = duration(item.src)
