@@ -43,18 +43,21 @@ onUnmounted(() => {
     <div class="lane-head mb-12 max-w-2xl">
       <p class="eyebrow">02 — memory lane</p>
       <h2 class="script-title mt-4 text-6xl md:text-7xl">Memory Lane</h2>
-      <p class="mt-3 text-inksoft">potongan-potongan cerita kita — klik fotonya ya 🤍</p>
+      <p class="mt-3 text-inksoft">
+        potongan-potongan cerita kita — Suci klik fotonya ya 🤍
+      </p>
     </div>
 
-    <!-- auto-rows dihitung supaya setiap sel persegi; foto besar (2x2)
-         tetap persegi karena ikut memakai 1 gap di tengahnya -->
+    <!-- Tinggi baris = lebar kolom x 1.25 (format potret 4:5). Sebagian besar
+         foto & video dari HP berorientasi potret, jadi dengan object-contain
+         semuanya tetap terlihat utuh dengan sisa area hitam yang minim. -->
     <div
-      class="mx-auto grid max-w-[1400px] grid-flow-dense grid-cols-2 gap-3 [grid-auto-rows:calc((min(100vw,1400px)-2.5rem-0.75rem)/2)] md:grid-cols-4 md:gap-5 md:[grid-auto-rows:calc((min(100vw,1400px)-8rem-3.75rem)/4)]"
+      class="mx-auto grid max-w-[1400px] grid-flow-dense grid-cols-2 gap-3 [grid-auto-rows:calc((min(100vw,1400px)-2.5rem-0.75rem)/2*1.25)] md:grid-cols-4 md:gap-5 md:[grid-auto-rows:calc((min(100vw,1400px)-8rem-3.75rem)/4*1.25)]"
     >
       <figure
         v-for="(item, i) in laneItems"
         :key="item.src"
-        class="lane-item group relative cursor-pointer overflow-hidden rounded-xl shadow-[0_16px_40px_-16px_rgba(201,79,124,0.45)] ring-4 ring-white md:rounded-2xl"
+        class="lane-item group relative cursor-pointer overflow-hidden rounded-xl bg-[#1b1116] shadow-[0_16px_40px_-16px_rgba(201,79,124,0.45)] ring-4 ring-white md:rounded-2xl"
         :class="isBig(i) ? 'col-span-2 row-span-2' : ''"
         @click="show(item.type, asset(item.src))"
       >
@@ -63,7 +66,7 @@ onUnmounted(() => {
           :src="asset(item.src)"
           :alt="item.caption || 'memory'"
           loading="lazy"
-          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
         />
         <template v-else>
           <!-- data-lazy: video hanya diputar saat petaknya terlihat di layar -->
@@ -74,7 +77,7 @@ onUnmounted(() => {
             loop
             muted
             playsinline
-            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
           ></video>
           <span
             class="pointer-events-none absolute right-2 bottom-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/85 shadow md:h-8 md:w-8"

@@ -19,6 +19,10 @@ const VID_OUT = 'public/video/addon'
 const IMG_EXT = new Set(['.jpg', '.jpeg', '.png', '.webp'])
 const VID_EXT = new Set(['.mp4', '.mov', '.m4v'])
 
+// Video dipakai utuh (tanpa audio). Hanya klip yang sangat panjang dipotong,
+// supaya satu video 15 menit tidak membuat situs jadi berat.
+const MAX_CLIP = 45 // detik
+
 // Urutkan kronologis dari nama file (IMG-20260307-WA0085, 2026-01-03-..., dst).
 // Yang tidak punya tanggal ditaruh paling akhir.
 function dateKey(name) {
@@ -81,14 +85,14 @@ for (const f of unique) {
   } else if (VID_EXT.has(ext)) {
     iVid++
     const name = `${String(iVid).padStart(3, '0')}.mp4`
-    // Versi web: potongan 4 detik, sisi terpanjang 640px, tanpa audio.
-    // Hanya tampil di lingkaran bubble/kotak kecil, jadi ini lebih dari cukup.
+    // Versi web: durasi asli (dibatasi MAX_CLIP), sisi terpanjang 640px,
+    // tanpa audio. Hanya tampil di petak grid & lingkaran bubble.
     execFileSync(
       ffmpegPath,
       [
         '-y', '-hide_banner', '-loglevel', 'error',
         '-i', src,
-        '-t', '4',
+        '-t', String(MAX_CLIP),
         '-an',
         // scale kedua membulatkan ke angka genap — libx264 menolak dimensi ganjil
         '-vf',

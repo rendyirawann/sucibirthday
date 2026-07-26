@@ -3,13 +3,8 @@
 // Naik pelan seperti gelembung sabun; isinya berganti-ganti foto/video.
 import { nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 import gsap from 'gsap'
-import { photos, videos } from '../data/content'
 import { asset } from '../lib/assets'
-
-const pool = [
-  ...photos.map((p) => ({ type: 'image', src: p.src })),
-  ...videos.map((src) => ({ type: 'video', src })),
-]
+import { drawMedia as drawFromDeck } from '../composables/useMediaDeck'
 
 // Maksimal 2 bubble menampilkan video bersamaan (hemat tenaga ponsel)
 const MAX_VIDEO_BUBBLES = 2
@@ -19,42 +14,13 @@ const bubbles = reactive([])
 let ctx
 let alive = true
 
-// "Tumpukan kartu yang dikocok": seluruh foto & video diacak jadi satu
-// tumpukan, diambil satu per satu, baru dikocok ulang setelah habis.
-// Dengan begini setiap aset pasti kebagian tampil sebelum ada yang terulang.
-let deck = []
-
-function shuffle(arr) {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
-
 function drawMedia() {
   const shown = new Set(bubbles.map((b) => b.media?.src))
   const videoCount = bubbles.filter((b) => b.media?.type === 'video').length
-  const skipped = []
-  let picked = null
-
-  // Ambil kartu teratas yang layak; yang dilewati dikembalikan ke tumpukan
-  // supaya tetap mendapat giliran nanti.
-  for (let guard = 0; guard < pool.length + 1; guard++) {
-    if (!deck.length) deck = shuffle(pool)
-    const card = deck.shift()
-    const tooManyVideos = card.type === 'video' && videoCount >= MAX_VIDEO_BUBBLES
-    if (shown.has(card.src) || tooManyVideos) {
-      skipped.push(card)
-      continue
-    }
-    picked = card
-    break
-  }
-
-  deck.push(...skipped)
-  return picked || pool[Math.floor(Math.random() * pool.length)]
+  return drawFromDeck(
+    (card) =>
+      !shown.has(card.src) && !(card.type === 'video' && videoCount >= MAX_VIDEO_BUBBLES),
+  )
 }
 
 function scheduleSwap(bubble) {
@@ -169,6 +135,7 @@ onUnmounted(() => {
             loop
             muted
             playsinline
+            preload="none"
             class="h-full w-full object-cover"
           ></video>
         </Transition>

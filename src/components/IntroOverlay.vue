@@ -47,7 +47,7 @@ function open() {
       <div ref="heart" class="mb-5 text-5xl">🤍</div>
       <p class="script-title text-5xl md:text-6xl">for you</p>
       <p class="mt-3 text-sm font-medium tracking-[0.25em] text-inksoft uppercase">
-        ada sesuatu untukmu
+        ada sesuatu untuk Suci
       </p>
       <button
         class="mt-8 cursor-pointer rounded-full bg-rose px-10 py-3 font-semibold tracking-wide text-white shadow-lg shadow-rose/30 transition-transform duration-200 hover:scale-105"
@@ -55,7 +55,7 @@ function open() {
       >
         Buka 🤍
       </button>
-      <p class="mt-4 text-xs text-inksoft">nyalakan suaramu ya</p>
+      <p class="mt-4 text-xs text-inksoft">nyalakan suaranya ya, Suci</p>
     </div>
   </div>
 </template>

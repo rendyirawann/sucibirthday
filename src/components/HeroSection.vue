@@ -1,19 +1,12 @@
 <script setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import gsap from 'gsap'
-import { eventInfo, hero, photos } from '../data/content'
-import { asset } from '../lib/assets'
+import { eventInfo, hero } from '../data/content'
+import HeroCluster from './HeroCluster.vue'
 
 const props = defineProps({ opened: Boolean })
 const root = ref(null)
 let ctx
-
-// Klaster foto miring di sisi kanan hero (desktop)
-const cluster = [
-  { src: photos[1].src, class: 'top-2 left-4 w-[52%] -rotate-6' },
-  { src: photos[13].src, class: 'top-[28%] right-0 w-[46%] rotate-4' },
-  { src: photos[21].src, class: 'bottom-0 left-[14%] w-[48%] -rotate-2' },
-]
 
 onMounted(() => {
   ctx = gsap.context(() => {
@@ -55,7 +48,7 @@ onUnmounted(() => ctx?.revert())
     <div class="pointer-events-none absolute top-[10%] left-[4%] h-64 w-64 rounded-full bg-petal opacity-60 blur-3xl"></div>
     <div class="pointer-events-none absolute right-[8%] bottom-[12%] h-72 w-72 rounded-full bg-softpink opacity-40 blur-3xl"></div>
 
-    <div class="grid w-full items-center gap-12 md:grid-cols-[1.25fr_1fr]">
+    <div class="grid w-full items-center gap-14 py-12 md:gap-12 md:py-0 md:grid-cols-[1.25fr_1fr]">
       <!-- kiri: tipografi besar rata kiri -->
       <div class="text-left">
         <p class="hero-stagger eyebrow">{{ eventInfo.day }} · {{ eventInfo.dateLong }}</p>
@@ -68,20 +61,16 @@ onUnmounted(() => ctx?.revert())
         <p class="hero-stagger mt-3 text-base text-inksoft italic md:text-lg">{{ hero.sub }}</p>
       </div>
 
-      <!-- kanan: klaster foto miring -->
-      <div class="hero-stagger relative hidden h-[440px] md:block">
-        <img
-          v-for="c in cluster"
-          :key="c.src"
-          :src="asset(c.src)"
-          alt=""
-          class="absolute aspect-[4/5] rounded-2xl object-cover shadow-[0_20px_45px_-15px_rgba(201,79,124,0.45)] ring-8 ring-white"
-          :class="c.class"
-        />
+      <!-- kanan: kartu foto/video yang bisa dibalik -->
+      <div class="hero-stagger">
+        <HeroCluster />
       </div>
     </div>
 
-    <div class="hero-hint absolute bottom-24 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-inksoft">
+    <!-- disembunyikan di ponsel: ruangnya bertabrakan dengan kartu & mini player -->
+    <div
+      class="hero-hint absolute bottom-24 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1 text-inksoft md:flex"
+    >
       <span class="text-xs font-medium tracking-[0.25em] uppercase">scroll pelan-pelan</span>
       <svg viewBox="0 0 24 24" class="hero-chev h-6 w-6 fill-none stroke-rose stroke-2">
         <path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />

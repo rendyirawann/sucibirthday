@@ -26,10 +26,10 @@ export const hero = {
 
 // Surat kecil — silakan personalisasi kata-katanya 🤍
 export const letter = {
-  greeting: 'Untuk sayangku,',
+  greeting: 'Untuk Suci sayang,',
   paragraphs: [
-    'Selamat ulang tahun, sayang. Setahun lagi berlalu, dan rasanya setiap harinya jadi cerita yang pengen aku simpan terus.',
-    'Halaman ini kecil saja — kumpulan potongan memori kita. Scroll pelan-pelan ya, sambil dengerin lagu-lagunya. 🤍',
+    'Selamat ulang tahun, sayang. Setahun lagi berlalu, dan rasanya setiap harinya jadi cerita yang pengen Abang simpan terus.',
+    'Halaman ini kecil saja — kumpulan potongan memori kita. Suci scroll pelan-pelan ya, sambil dengerin lagu-lagunya. 🤍',
   ],
   closing: 'with love, always',
 }
@@ -100,5 +100,5 @@ export const finale = {
 
 export const closing = {
   script: 'see you on your day',
-  note: 'Sampai ketemu tanggal 27 Juli ya, sayang. 🤍',
+  note: 'Sampai ketemu tanggal 27 Juli ya, sayang. Abang tunggu. 🤍',
 }
