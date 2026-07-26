@@ -22,6 +22,11 @@ const busy = new Set()
 let ctx
 let alive = true
 
+// Kartu yang baru berganti mendarat di atas tumpukan dan TETAP di sana —
+// seperti kartu yang baru dibagikan. Counter ini terus naik supaya kartu
+// terakhir yang berubah selalu jadi yang paling depan.
+let topZ = Math.max(...LAYOUT.map((l) => l.z))
+
 // Maksimal satu kartu berisi video sekaligus
 function pick() {
   const shown = new Set(cards.map((c) => c.media?.src))
@@ -40,12 +45,13 @@ function toss(i) {
   gsap
     .timeline({
       onComplete: () => {
-        gsap.set(el, { zIndex: LAYOUT[i].z })
+        // tetap di depan setelah mendarat, bukan kembali ke urutan awal
+        gsap.set(el, { zIndex: ++topZ })
         busy.delete(i)
       },
     })
-    // kartu lama terlempar keluar sambil berputar
-    .set(el, { zIndex: 60 })
+    // kartu lama terlempar keluar sambil berputar, melayang di atas semuanya
+    .set(el, { zIndex: topZ + 50 })
     .to(el, {
       x: dir * 190,
       y: -120,
