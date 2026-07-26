@@ -93,7 +93,7 @@ export const initialTrackIndex = 9
 // Untuk membuat ulang montase otomatis: node scripts/make-memory-video.mjs
 export const finale = {
   title: 'A Little Film',
-  sub: 'sembilan puluh detik tentang kita — tekan play 🤍',
+  sub: 'lima menit tentang kita — matikan lampu, tekan play 🤍',
   src: 'video/memories-2026.mp4',
   poster: 'img/memories-poster.jpg',
 }
